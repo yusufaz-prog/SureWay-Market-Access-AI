@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SureWay Market Access AI</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Arial, sans-serif;background:#f4f7fb;color:#111}
+    header{background:#063b73;color:#fff;padding:16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+    header img{width:52px;height:52px;border-radius:8px;background:#fff}
+    header h1{font-size:18px;margin:0} header p{margin:3px 0 0;font-size:12px;opacity:.9}
+    nav{display:flex;overflow:auto;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:84px;z-index:9}
+    nav button{flex:1;padding:14px;border:0;background:#fff;font-weight:bold;white-space:nowrap}
+    nav button.active{background:#e8f1ff;color:#063b73;border-bottom:3px solid #063b73}
+    main{padding:14px;max-width:980px;margin:auto}
+    .card{background:#fff;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 3px 12px #0001}
+    h2{margin-top:0;color:#063b73}.grid{display:grid;gap:10px}
+    label{font-weight:bold;font-size:14px} input,select,textarea{width:100%;padding:13px;border:1px solid #ccd3dd;border-radius:10px;font-size:16px}
+    button.primary{background:#063b73;color:#fff;border:0;border-radius:10px;padding:13px 16px;font-weight:bold}
+    .pill{display:inline-block;background:#e9f5ee;color:#087a3d;border-radius:20px;padding:6px 10px;font-size:13px;margin:4px}
+    .flow{display:grid;gap:10px}.step{padding:12px;border-radius:12px;background:#f1f5f9;font-weight:bold}
+    .ok{color:#087a3d}.muted{color:#667085}.row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #eee;padding:10px 0}
+    .hidden{display:none}.qr{width:150px;height:150px;margin:auto;display:grid;place-items:center;background:#fff;border:8px solid #111;font-weight:bold}
+  </style>
+</head>
+<body>
+<header>
+  <img src="sureway-logo.png" alt="SureWay logo" onerror="this.style.display='none'">
+  <div>
+    <h1>SureWay Market Access AI</h1>
+    <p>SMEs • Logistics • Energy Intelligence</p>
+    <p>SureWay Integrated Technology Solutions Ltd | RC 8481374</p>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('onboard',this)">Onboard</button>
+  <button onclick="showTab('smes',this)">SMEs</button>
+  <button onclick="showTab('cargo',this)">Cargo</button>
+  <button onclick="showTab('fuel',this)">Fuel</button>
+  <button onclick="showTab('insights',this)">Insights</button>
+</nav>
+
+<main>
+<section id="onboard" class="tab">
+  <div class="card">
+    <h2>Partner Onboarding</h2>
+    <div class="grid">
+      <label>User Category</label>
+      <select id="category">
+        <option>SME Buyer</option><option>Farmer</option><option>Truck Owner</option>
+        <option>Driver</option><option>Fuel Station</option><option>Manufacturer/Supplier</option>
+      </select>
+      <label>Full Name / Company Name</label><input id="name" placeholder="e.g. Azeez Motors / David Aremu">
+      <label>Phone Number</label><input id="phone" placeholder="+234...">
+      <label>Location</label><input id="location" placeholder="New-Bussa, Niger State">
+      <button class="primary" onclick="saveOnboard()">Save Partner</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Truck Owner Registration</h2>
+    <div class="grid">
+      <input id="truckOwner" placeholder="Truck owner/company name">
+      <input id="plate" placeholder="Plate registration number">
+      <input id="truckType" placeholder="Truck type e.g. Trailer">
+      <input id="capacity" type="number" placeholder="Capacity/Tonnage">
+      <input id="routes" placeholder="Preferred routes e.g. Lagos - Kano">
+      <button class="primary" onclick="registerTruck()">Complete Truck Registration</button>
+    </div>
+    <p id="truckMsg" class="muted"></p>
+  </div>
+  <div class="card">
+    <h2>Driver Registration</h2>
+    <div class="grid">
+      <input id="driverName" placeholder="Driver full name">
+      <input id="license" placeholder="Valid driver's license number">
+      <input id="experience" type="number" placeholder="Years of experience">
+      <input id="driverRoute" placeholder="Preferred routes">
+      <button class="primary" onclick="registerDriver()">Complete Driver Registration</button>
+    </div>
+    <p id="driverMsg" class="muted"></p>
+  </div>
+</section>
+
+<section id="smes" class="tab hidden">
+  <div class="card">
+    <h2>SMEs Connect AI</h2>
+    <div class="grid">
+      <label>Product Needed</label><input id="product" placeholder="Dangote cement, flour, fertilizer">
+      <label>Quantity</label><input id="qty" type="number" placeholder="500">
+      <label>Location</label><input id="smeLoc" placeholder="New-Bussa, Niger State">
+      <label>Preferred Supplier/Manufacturer</label><input id="supplier" placeholder="Optional">
+      <button class="primary" onclick="submitSME()">Submit Request</button>
+    </div>
+    <p class="muted">Searching verified manufacturers and distributors including Dangote, BUA and partner suppliers.</p>
+  </div>
+  <div class="card"><h2>Aggregated Demand</h2><div id="demandList">No demand yet.</div></div>
+</section>
+
+<section id="cargo" class="tab hidden">
+  <div class="card">
+    <h2>CargoConnectAI Load</h2>
+    <div class="grid">
+      <input id="cargoProduct" placeholder="Cargo/Product type">
+      <input id="cargoQty" type="number" placeholder="Quantity">
+      <input id="tonnage" type="number" placeholder="Weight/Tonnage">
+      <input id="origin" placeholder="Pickup origin">
+      <input id="destination" placeholder="Destination">
+      <select id="truckReq"><option>Trailer</option><option>Tanker</option><option>Covered Truck</option><option>Refrigerated Truck</option></select>
+      <button class="primary" onclick="createCargo()">Post Cargo Request</button>
+    </div>
+  </div>
+  <div class="card"><h2>Available Trucks</h2><div id="truckList"></div></div>
+</section>
+
+<section id="fuel" class="tab hidden">
+  <div class="card">
+    <h2>SFA/Pay4Pump Fuel Support</h2>
+    <div id="fuelList">No fuel request yet.</div>
+  </div>
+</section>
+
+<section id="insights" class="tab hidden">
+  <div class="card">
+    <h2>End-to-End Ecosystem Flow</h2>
+    <div class="flow" id="flow">
+      <div class="step">SMEs Request</div><div class="step">CargoConnectAI Load</div>
+      <div class="step">Truck Match</div><div class="step">SFA/Pay4Pump Fuel Support</div>
+      <div class="step">Supplier/Delivery Status</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Recent Ecosystem Activity</h2>
+    <div id="activity">No activity yet.</div>
+  </div>
+  <div class="card">
+    <h2>Verified Manufacturers</h2>
+    <p><b>Dangote Cement</b> — Obajana, Kogi</p>
+    <p><b>BUA Cement</b> — Okpella, Edo / Sokoto</p>
+    <p><b>Flour Mills of Nigeria</b> — Apapa, Lagos</p>
+    <p><b>Dangote Refinery</b> — Lekki, Lagos</p>
+    <p><b>Indorama Fertilizer</b> — Eleme, Rivers</p>
+  </div>
+</section>
+</main>
+
+<script>
+let state={demands:[], cargos:[], fuel:[], trucks:[], activity:[]};
+
+function showTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+function addActivity(msg){state.activity.unshift({msg,time:new Date().toLocaleString()});}
+function saveOnboard(){addActivity(document.getElementById('category').value+' onboarded: '+document.getElementById('name').value);render();alert('Partner saved for verification.');}
+function registerTruck(){state.trucks.push({owner:truckOwner.value,plate:plate.value,type:truckType.value,cap:+capacity.value,route:routes.value,status:'Pending verification'});truckMsg.textContent='Truck registration submitted. Verification pending.';addActivity('Truck owner registration submitted: '+truckOwner.value);render();}
+function registerDriver(){driverMsg.textContent='Driver registration submitted. Verification pending.';addActivity('Driver registration submitted: '+driverName.value);render();}
+function submitSME(){
+ let d={product:product.value,qty:+qty.value,loc:smeLoc.value,supplier:supplier.value||'Verified suppliers',name:name.value||'SME Buyer'};
+ state.demands.push(d); addActivity('SME demand received: '+d.qty+' units of '+d.product+' in '+d.loc);
+ cargoProduct.value=d.product; cargoQty.value=d.qty; tonnage.value=Math.ceil(d.qty/20); origin.value=d.supplier; destination.value=d.loc;
+ createCargo(true); render(); alert('SME request submitted. CargoConnectAI and SFA/Pay4Pump triggered.');
+}
+function createCargo(auto=false){
+ let c={id:Math.floor(Math.random()*900000)+100000,product:cargoProduct.value,qty:+cargoQty.value,ton:+tonnage.value,origin:origin.value||'Supplier location',dest:destination.value||'Buyer location',truck:truckReq.value,status:'Truck Match Pending'};
+ state.cargos.push(c); addActivity('CargoConnectAI load created for '+c.product+' from '+c.origin+' to '+c.dest);
+ let litres=Math.max(30, Math.round(c.ton*6.5)); state.fuel.push({cargo:c.id,route:c.origin+' to '+c.dest,litres,type:'Diesel',station:'AA Rano / Oando partner station',status:'Fuel Support Suggested'});
+ addActivity('SFA/Pay4Pump fuel support suggested for Cargo #'+c.id);
+ if(!auto) alert('Cargo request created and fuel support suggested.');
+ render();
+}
+function render(){
+ demandList.innerHTML=state.demands.length?state.demands.map(d=>`<div class="row"><span>${d.product}</span><b>${d.qty} units</b></div>`).join(''):'No demand yet.';
+ truckList.innerHTML=(state.trucks.length?state.trucks:[{owner:'GIG Logistics',cap:30,route:'Lagos'},{owner:'Dangote Transport',cap:35,route:'Kano'},{owner:'Ace Haulage',cap:25,route:'Kaduna'}]).map(t=>`<p><b>${t.owner}</b> (${t.cap||t.capacity||'--'} Ton)<br><span class="muted">${t.route||''} ${t.status?'- '+t.status:''}</span></p>`).join('');
+ fuelList.innerHTML=state.fuel.length?state.fuel.map(f=>`<div class="card"><b>Fuel Request for Cargo #${f.cargo}</b><p>Route: ${f.route}</p><p><b>Fuel Needed:</b> ${f.litres} liters of ${f.type}</p><span class="pill">${f.status}</span><div class="qr">QR<br>${f.litres}L ${f.type}</div><p class="muted">Station: ${f.station}</p></div>`).join(''):'No fuel request yet.';
+ activity.innerHTML=state.activity.length?state.activity.map(a=>`<p><b>${a.msg}</b><br><span class="muted">${a.time}</span></p>`).join(''):'No activity yet.';
+ document.querySelectorAll('.step').forEach((s,i)=>{if(state.demands.length && i<4)s.innerHTML='✅ '+s.textContent.replace('✅ ','')});
+}
+render();
+</script>
+</body>
+</html>
