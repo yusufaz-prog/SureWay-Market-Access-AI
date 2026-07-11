@@ -999,7 +999,8 @@
 
   <script>
     const STORAGE_KEY = "surewayMarketAccessAI";
-
+const API_BASE_URL =
+  "https://sureway-market-access-api.onrender.com";
     let state = {
       partners: [],
       trucks: [],
@@ -1093,39 +1094,83 @@
       box.innerHTML = `<div class="${type}">${text}</div>`;
     }
 
-    function savePartner() {
-      const category = value("category");
-      const name = value("name");
-      const phone = value("phone");
-      const location = value("location");
+    async function savePartner() {
+  const category = value("category");
+  const name = value("name");
+  const phone = value("phone");
+  const location = value("location");
 
-      if (!name || !phone || !location) {
-        showMessage(
-          "partnerMessage",
-          "Please enter the partner name, phone number and location.",
-          "warning"
-        );
-        return;
-      }
+  if (!name || !phone || !location) {
+    showMessage(
+      "partnerMessage",
+      "Please enter the partner name, phone number and location.",
+      "warning"
+    );
+    return;
+  }
 
-      state.partners.push({
-        id: Date.now(),
-        category,
-        name,
-        phone,
-        location,
-        status: "Pending Verification"
-      });
+  showMessage(
+    "partnerMessage",
+    "Submitting registration to SureWay cloud...",
+    "success"
+  );
 
-      addActivity(`${category} partner ${name} registered from ${location}.`);
-      saveState();
-      render();
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fullName: name,
+        phone: phone,
+        location: location,
+        userType: category || "Partner",
+        businessName: name,
+        productInterest: category || ""
+      })
+    });
 
-      showMessage(
-        "partnerMessage",
-        "Partner saved successfully. Verification is pending."
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Registration could not be completed."
       );
     }
+
+    state.partners.push({
+      id: result.registrationId || Date.now(),
+      category,
+      name,
+      phone,
+      location,
+      status: "Pending Verification"
+    });
+
+    addActivity(
+      `${category || "Partner"} ${name} registered from ${location}.`
+    );
+
+    saveState();
+    render();
+
+    showMessage(
+      "partnerMessage",
+      "Partner registered successfully and saved to MongoDB.",
+      "success"
+    );
+  } catch (error) {
+    console.error("Partner registration error:", error);
+
+    showMessage(
+      "partnerMessage",
+      error.message ||
+        "Unable to connect to the SureWay server. Please try again.",
+      "warning"
+    );
+  }
+}
 
     function registerTruck() {
       const owner = value("truckOwner");
