@@ -1172,46 +1172,301 @@ const API_BASE_URL =
   }
 }
 
-    function registerTruck() {
-      const owner = value("truckOwner");
-      const plate = value("plate");
-      const type = value("truckType");
-      const capacity = numericValue("capacity");
-      const location = value("truckLocation");
-      const routes = value("routes");
+    <div class="card">
+  <h2>Truck Registration</h2>
+  <p class="muted">
+    Register a truck for CargoConnectAI load matching and verification.
+  </p>
 
-      if (!owner || !plate || capacity <= 0 || !location) {
-        showMessage(
-          "truckMessage",
-          "Please enter the truck owner, plate number, capacity and current location.",
-          "warning"
-        );
-        return;
-      }
+  <h3>1. Owner Information</h3>
 
-      state.trucks.push({
-        id: Date.now(),
-        owner,
-        plate,
-        type,
-        capacity,
-        location,
-        routes,
-        status: "Pending Verification"
-      });
+  <label for="truckOwnerType">Owner Type *</label>
+  <select id="truckOwnerType">
+    <option value="">Select owner type</option>
+    <option value="Individual">Individual</option>
+    <option value="Registered Company">Registered Company</option>
+    <option value="Transport Cooperative">Transport Cooperative</option>
+    <option value="Fleet Operator">Fleet Operator</option>
+  </select>
 
-      addActivity(
-        `${owner} registered a ${capacity}-ton ${type} with plate ${plate}.`
-      );
+  <label for="truckOwner">Owner / Company Name *</label>
+  <input
+    id="truckOwner"
+    type="text"
+    placeholder="Enter owner or company name"
+  />
 
-      saveState();
-      render();
+  <label for="truckOwnerPhone">Phone Number *</label>
+  <input
+    id="truckOwnerPhone"
+    type="tel"
+    placeholder="+234..."
+  />
 
-      showMessage(
-        "truckMessage",
-        "Truck registration submitted. Verification is pending."
-      );
-    }
+  <label for="truckOwnerEmail">Email Address</label>
+  <input
+    id="truckOwnerEmail"
+    type="email"
+    placeholder="Optional email address"
+  />
+
+  <label for="truckCompanyName">Registered Company Name</label>
+  <input
+    id="truckCompanyName"
+    type="text"
+    placeholder="Leave blank for individual owners"
+  />
+
+  <label for="truckCacNumber">CAC Registration Number</label>
+  <input
+    id="truckCacNumber"
+    type="text"
+    placeholder="Optional CAC number"
+  />
+
+  <h3>2. Truck Information</h3>
+
+  <label for="plate">Vehicle Plate Number *</label>
+  <input
+    id="plate"
+    type="text"
+    placeholder="Example: ABC-123-XY"
+  />
+
+  <label for="truckMake">Truck Make *</label>
+  <input
+    id="truckMake"
+    type="text"
+    placeholder="Example: HOWO, MAN, DAF or Volvo"
+  />
+
+  <label for="truckModel">Truck Model</label>
+  <input
+    id="truckModel"
+    type="text"
+    placeholder="Optional truck model"
+  />
+
+  <label for="truckType">Truck Type *</label>
+  <select id="truckType">
+    <option value="">Select truck type</option>
+    <option value="Flatbed Truck">Flatbed Truck</option>
+    <option value="Box Truck">Box Truck</option>
+    <option value="Tipper Truck">Tipper Truck</option>
+    <option value="Tanker">Tanker</option>
+    <option value="Trailer">Trailer</option>
+    <option value="Low-bed Truck">Low-bed Truck</option>
+    <option value="Refrigerated Truck">Refrigerated Truck</option>
+    <option value="Container Truck">Container Truck</option>
+    <option value="Cement Bulk Tanker">Cement Bulk Tanker</option>
+    <option value="General Haulage Truck">General Haulage Truck</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="capacity">Load Capacity in Tonnes *</label>
+  <input
+    id="capacity"
+    type="number"
+    min="1"
+    step="0.1"
+    placeholder="Example: 30"
+  />
+
+  <label for="truckFuelType">Fuel Type *</label>
+  <select id="truckFuelType">
+    <option value="">Select fuel type</option>
+    <option value="Diesel">Diesel</option>
+    <option value="CNG">CNG</option>
+    <option value="LNG">LNG</option>
+    <option value="Petrol">Petrol</option>
+    <option value="Electric">Electric</option>
+    <option value="Hybrid">Hybrid</option>
+  </select>
+
+  <h3>3. Cargo Capability</h3>
+  <p class="muted">Select every cargo category the truck can carry.</p>
+
+  <label>
+    <input type="checkbox" name="truckCargoType" value="Cement" />
+    Cement
+  </label>
+
+  <label>
+    <input type="checkbox" name="truckCargoType" value="Flour" />
+    Flour
+  </label>
+
+  <label>
+    <input type="checkbox" name="truckCargoType" value="Sugar" />
+    Sugar
+  </label>
+
+  <label>
+    <input type="checkbox" name="truckCargoType" value="Rice" />
+    Rice
+  </label>
+
+  <label>
+    <input type="checkbox" name="truckCargoType" value="Fertilizer" />
+    Fertilizer
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="truckCargoType"
+      value="Agricultural Produce"
+    />
+    Agricultural Produce
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="truckCargoType"
+      value="Construction Materials"
+    />
+    Construction Materials
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="truckCargoType"
+      value="Container Cargo"
+    />
+    Container Cargo
+  </label>
+
+  <label>
+    <input type="checkbox" name="truckCargoType" value="FMCG" />
+    FMCG
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="truckCargoType"
+      value="General Goods"
+    />
+    General Goods
+  </label>
+
+  <h3>4. Location and Operations</h3>
+
+  <label for="truckLocation">Current Truck Location *</label>
+  <input
+    id="truckLocation"
+    type="text"
+    placeholder="Example: Lagos, Nigeria"
+  />
+
+  <label for="truckBaseLocation">Permanent Base Location</label>
+  <input
+    id="truckBaseLocation"
+    type="text"
+    placeholder="Optional base location"
+  />
+
+  <label for="truckRoutes">Preferred Routes *</label>
+  <input
+    id="truckRoutes"
+    type="text"
+    placeholder="Example: Lagos–Abuja, Lagos–Kano"
+  />
+
+  <label for="truckAvailability">Availability Status *</label>
+  <select id="truckAvailability">
+    <option value="">Select availability</option>
+    <option value="Available Now">Available Now</option>
+    <option value="Available Within 24 Hours">
+      Available Within 24 Hours
+    </option>
+    <option value="Available Within 3 Days">
+      Available Within 3 Days
+    </option>
+    <option value="On Trip">On Trip</option>
+    <option value="Under Maintenance">Under Maintenance</option>
+    <option value="Not Available">Not Available</option>
+  </select>
+
+  <label for="truckNextAvailableDate">Next Available Date</label>
+  <input id="truckNextAvailableDate" type="date" />
+
+  <h3>5. Compliance and Driver</h3>
+
+  <label for="truckInsuranceStatus">Insurance Status *</label>
+  <select id="truckInsuranceStatus">
+    <option value="">Select insurance status</option>
+    <option value="Valid">Valid</option>
+    <option value="Expired">Expired</option>
+    <option value="Pending Renewal">Pending Renewal</option>
+    <option value="Not Available">Not Available</option>
+  </select>
+
+  <label for="truckRoadworthinessStatus">
+    Roadworthiness Status *
+  </label>
+  <select id="truckRoadworthinessStatus">
+    <option value="">Select roadworthiness status</option>
+    <option value="Valid">Valid</option>
+    <option value="Expired">Expired</option>
+    <option value="Pending Renewal">Pending Renewal</option>
+    <option value="Not Available">Not Available</option>
+  </select>
+
+  <label for="truckDriverAssigned">Driver Assignment *</label>
+  <select id="truckDriverAssigned">
+    <option value="">Select driver arrangement</option>
+    <option value="Driver Already Assigned">
+      Driver Already Assigned
+    </option>
+    <option value="Driver Needed">Driver Needed</option>
+    <option value="Owner Is the Driver">Owner Is the Driver</option>
+    <option value="Assign Later">Assign Later</option>
+  </select>
+
+  <label for="truckDriverName">Driver Name</label>
+  <input
+    id="truckDriverName"
+    type="text"
+    placeholder="Optional at this stage"
+  />
+
+  <label for="truckDriverPhone">Driver Phone Number</label>
+  <input
+    id="truckDriverPhone"
+    type="tel"
+    placeholder="Optional at this stage"
+  />
+
+  <label for="truckGpsInstalled">GPS Tracker</label>
+  <select id="truckGpsInstalled">
+    <option value="Not specified">Not specified</option>
+    <option value="Installed">Installed</option>
+    <option value="Not Installed">Not Installed</option>
+    <option value="Installation Planned">Installation Planned</option>
+  </select>
+
+  <label for="truckSpecialNotes">Additional Information</label>
+  <textarea
+    id="truckSpecialNotes"
+    rows="4"
+    placeholder="Optional operational or special-handling information"
+  ></textarea>
+
+  <label>
+    <input id="truckVerificationConsent" type="checkbox" />
+    I confirm that the supplied information is accurate and consent to
+    SureWay verification. *
+  </label>
+
+  <button type="button" onclick="registerTruck()">
+    Register Truck
+  </button>
+
+  <div id="truckMessage"></div>
+</div>
 
     function registerDriver() {
       const name = value("driverName");
