@@ -1467,7 +1467,170 @@ const API_BASE_URL =
 
   <div id="truckMessage"></div>
 </div>
+async function registerTruck() {
+  const ownerType = value("truckOwnerType");
+  const ownerName = value("truckOwner");
+  const ownerPhone = value("truckOwnerPhone");
+  const email = value("truckOwnerEmail");
+  const companyName = value("truckCompanyName");
+  const cacNumber = value("truckCacNumber");
 
+  const plateNumber = value("plate");
+  const truckMake = value("truckMake");
+  const truckModel = value("truckModel");
+  const truckType = value("truckType");
+  const capacityTonnes = numericValue("capacity");
+  const fuelType = value("truckFuelType");
+
+  const currentLocation = value("truckLocation");
+  const baseLocation = value("truckBaseLocation");
+  const preferredRoutes = value("truckRoutes");
+  const availabilityStatus = value("truckAvailability");
+  const nextAvailableDate = value("truckNextAvailableDate");
+
+  const insuranceStatus = value("truckInsuranceStatus");
+  const roadworthinessStatus = value(
+    "truckRoadworthinessStatus"
+  );
+
+  const driverAssigned = value("truckDriverAssigned");
+  const driverName = value("truckDriverName");
+  const driverPhone = value("truckDriverPhone");
+  const gpsInstalled = value("truckGpsInstalled");
+  const specialNotes = value("truckSpecialNotes");
+
+  const verificationConsent =
+    document.getElementById("truckVerificationConsent")?.checked === true;
+
+  const cargoTypes = Array.from(
+    document.querySelectorAll(
+      'input[name="truckCargoType"]:checked'
+    )
+  ).map((checkbox) => checkbox.value);
+
+  if (
+    !ownerType ||
+    !ownerName ||
+    !ownerPhone ||
+    !plateNumber ||
+    !truckMake ||
+    !truckType ||
+    capacityTonnes <= 0 ||
+    !fuelType ||
+    !currentLocation ||
+    !preferredRoutes ||
+    cargoTypes.length === 0 ||
+    !availabilityStatus ||
+    !insuranceStatus ||
+    !roadworthinessStatus ||
+    !driverAssigned ||
+    !verificationConsent
+  ) {
+    showMessage(
+      "truckMessage",
+      "Please complete every compulsory field, select at least one cargo type and accept the verification consent.",
+      "warning"
+    );
+    return;
+  }
+
+  showMessage(
+    "truckMessage",
+    "Submitting truck registration to SureWay cloud...",
+    "success"
+  );
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/trucks`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ownerType,
+          ownerName,
+          ownerPhone,
+          email,
+          companyName,
+          cacNumber,
+          plateNumber,
+          truckMake,
+          truckModel,
+          truckType,
+          capacityTonnes,
+          fuelType,
+          currentLocation,
+          baseLocation,
+          preferredRoutes,
+          cargoTypes,
+          availabilityStatus,
+          nextAvailableDate,
+          insuranceStatus,
+          roadworthinessStatus,
+          driverAssigned,
+          driverName,
+          driverPhone,
+          gpsInstalled,
+          specialNotes,
+          verificationConsent
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message ||
+          "Truck registration could not be completed."
+      );
+    }
+
+    state.trucks.push({
+      id: result.truckId || Date.now(),
+      owner: ownerName,
+      ownerPhone,
+      plate: plateNumber.toUpperCase(),
+      make: truckMake,
+      model: truckModel,
+      type: truckType,
+      capacity: capacityTonnes,
+      fuelType,
+      location: currentLocation,
+      routes: preferredRoutes,
+      cargoTypes,
+      availabilityStatus,
+      insuranceStatus,
+      roadworthinessStatus,
+      driverAssigned,
+      status: "Pending Verification"
+    });
+
+    addActivity(
+      `${ownerName} registered ${capacityTonnes}-ton ${truckType} with plate ${plateNumber.toUpperCase()}.`
+    );
+
+    saveState();
+    render();
+
+    showMessage(
+      "truckMessage",
+      "Truck registered successfully, saved to MongoDB and submitted for verification.",
+      "success"
+    );
+  } catch (error) {
+    console.error("Truck registration error:", error);
+
+    showMessage(
+      "truckMessage",
+      error.message ||
+        "Unable to connect to the SureWay server. Please try again.",
+      "warning"
+    );
+  }
+}
     function registerDriver() {
       const name = value("driverName");
       const phone = value("driverPhone");
