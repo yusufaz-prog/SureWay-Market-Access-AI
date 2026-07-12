@@ -3,2337 +3,513 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta name="theme-color" content="#0b4b83" />
   <title>SureWay Market Access AI</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     :root {
-      --blue: #0b4b83;
-      --blue-dark: #07365f;
-      --blue-light: #e7f1fb;
-      --green: #138a4b;
-      --green-light: #e8f7ef;
-      --orange: #d97706;
-      --red: #b42318;
-      --grey: #667085;
-      --border: #d0d5dd;
-      --background: #f3f7fb;
-      --white: #ffffff;
-      --shadow: 0 5px 18px rgba(11, 75, 131, 0.09);
+      --blue:#0b4b83; --blue2:#07365f; --light:#eef6ff; --green:#168a4b;
+      --green-light:#e8f7ef; --orange:#d97706; --red:#b42318; --grey:#667085;
+      --border:#d0d5dd; --bg:#f3f7fb; --white:#fff; --shadow:0 8px 24px rgba(11,75,131,.09);
     }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--background);
-      color: #101828;
+    body { margin:0; font-family:Arial,Helvetica,sans-serif; background:var(--bg); color:#101828; }
+    header { background:var(--blue); color:#fff; padding:22px; display:flex; gap:16px; align-items:center; }
+    header img { width:84px; height:84px; border-radius:16px; object-fit:contain; background:#fff; }
+    header h1 { margin:0 0 6px; font-size:28px; }
+    header p { margin:4px 0; opacity:.92; line-height:1.4; }
+    nav { position:sticky; top:0; z-index:20; display:flex; overflow-x:auto; background:#fff; border-bottom:1px solid #ddd; }
+    nav button { flex:0 0 auto; min-width:116px; border:0; background:#fff; padding:18px 14px; font-weight:700; font-size:16px; cursor:pointer; }
+    nav button.active { color:var(--blue); background:#eaf3fc; border-bottom:4px solid var(--blue); }
+    main { max-width:1100px; margin:0 auto; padding:24px 16px 50px; }
+    .tab { display:none; }
+    .tab.active { display:block; }
+    .card { background:#fff; border-radius:22px; padding:24px; margin-bottom:22px; box-shadow:var(--shadow); }
+    .card h2 { color:var(--blue); margin-top:0; font-size:28px; }
+    .card h3 { color:var(--blue2); }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .full { grid-column:1/-1; }
+    label { display:block; font-weight:700; margin-bottom:7px; }
+    input, select, textarea { width:100%; border:1px solid var(--border); border-radius:14px; padding:14px; font-size:16px; background:#fff; }
+    textarea { min-height:100px; resize:vertical; }
+    button.primary, button.secondary, button.danger {
+      border:0; border-radius:14px; padding:15px 20px; font-size:16px; font-weight:700; cursor:pointer;
     }
-
-    header {
-      background: var(--blue);
-      color: var(--white);
-      padding: 20px;
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    header img {
-      width: 82px;
-      height: 82px;
-      border-radius: 14px;
-      object-fit: contain;
-      background: var(--white);
-    }
-
-    header h1 {
-      margin: 0 0 5px;
-      font-size: 26px;
-    }
-
-    header p {
-      margin: 3px 0;
-      opacity: 0.9;
-      line-height: 1.35;
-    }
-
-    nav {
-      display: flex;
-      overflow-x: auto;
-      background: var(--white);
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    nav button {
-      flex: 0 0 auto;
-      min-width: 105px;
-      padding: 17px 14px;
-      border: 0;
-      background: var(--white);
-      color: #111;
-      font-size: 16px;
-      font-weight: bold;
-      white-space: nowrap;
-      border-bottom: 4px solid transparent;
-    }
-
-    nav button.active {
-      color: var(--blue);
-      background: var(--blue-light);
-      border-bottom-color: var(--blue);
-    }
-
-    main {
-      max-width: 980px;
-      margin: auto;
-      padding: 22px 16px 50px;
-    }
-
-    .tab {
-      display: block;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .card {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 24px;
-      margin-bottom: 22px;
-      box-shadow: var(--shadow);
-    }
-
-    h2 {
-      margin-top: 0;
-      color: var(--blue);
-      font-size: 29px;
-    }
-
-    h3 {
-      margin-top: 0;
-      font-size: 21px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 15px;
-    }
-
-    .full {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 16px;
-      background: var(--white);
-      margin-bottom: 4px;
-    }
-
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    button.primary,
-    button.secondary,
-    button.danger {
-      width: 100%;
-      padding: 15px 18px;
-      border: 0;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button.primary {
-      background: var(--blue);
-      color: var(--white);
-    }
-
-    button.secondary {
-      background: var(--green);
-      color: var(--white);
-    }
-
-    button.danger {
-      background: var(--red);
-      color: var(--white);
-    }
-
-    .muted {
-      color: var(--grey);
-      line-height: 1.5;
-    }
-
-    .notice {
-      background: var(--blue-light);
-      border-left: 5px solid var(--blue);
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 15px;
-    }
-
-    .success {
-      background: var(--green-light);
-      color: var(--green);
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    .warning {
-      background: #fff7ed;
-      color: #9a3412;
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 15px;
-    }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .metric {
-      background: var(--blue-light);
-      border-radius: 16px;
-      padding: 18px;
-    }
-
-    .metric span {
-      display: block;
-      color: var(--grey);
-      font-size: 14px;
-      margin-bottom: 7px;
-    }
-
-    .metric strong {
-      font-size: 25px;
-      color: var(--blue-dark);
-    }
-
-    .list-item {
-      border: 1px solid #e4e7ec;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 12px;
-      background: #fafcff;
-    }
-
-    .list-item p {
-      margin: 5px 0;
-      line-height: 1.45;
-    }
-
-    .badge {
-      display: inline-block;
-      border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 13px;
-      font-weight: bold;
-      margin-top: 6px;
-    }
-
-    .pending {
-      background: #fff4e5;
-      color: #9a5b00;
-    }
-
-    .verified {
-      background: var(--green-light);
-      color: var(--green);
-    }
-
-    .matched {
-      background: var(--blue-light);
-      color: var(--blue);
-    }
-
-    .flow {
-      display: grid;
-      gap: 12px;
-    }
-
-    .flow-step {
-      background: #eef3f8;
-      padding: 16px;
-      border-radius: 14px;
-      font-weight: bold;
-    }
-
-    .flow-step.complete {
-      border-left: 6px solid var(--green);
-    }
-
-    .flow-step.pending-step {
-      border-left: 6px solid #98a2b3;
-    }
-
-    .company-footer {
-      text-align: center;
-      color: var(--grey);
-      font-size: 14px;
-      padding: 30px 16px 45px;
-    }
-
-    .two-column {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .manufacturer-box {
-      border: 1px solid #dbe7f3;
-      border-radius: 16px;
-      padding: 17px;
-      margin-bottom: 13px;
-      background: #fbfdff;
-    }
-
-    .revenue-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 13px 0;
-      border-bottom: 1px solid #eaecf0;
-    }
-
-    .revenue-row:last-child {
-      border-bottom: 0;
-    }
-
-    @media (max-width: 700px) {
-      header {
-        align-items: flex-start;
-      }
-
-      header img {
-        width: 72px;
-        height: 72px;
-      }
-
-      header h1 {
-        font-size: 23px;
-      }
-
-      .grid,
-      .metrics,
-      .two-column {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        padding: 20px;
-      }
-
-      h2 {
-        font-size: 26px;
-      }
+    button.primary { background:var(--blue); color:#fff; }
+    button.secondary { background:#eaf3fc; color:var(--blue); }
+    button.danger { background:#fee4e2; color:var(--red); }
+    .message { margin-top:16px; }
+    .notice { border-radius:14px; padding:14px 16px; font-weight:700; }
+    .success { background:var(--green-light); color:var(--green); }
+    .warning { background:#fff4e5; color:#9a4d00; }
+    .error { background:#fee4e2; color:var(--red); }
+    .muted { color:var(--grey); }
+    .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .metric { background:var(--light); border-radius:16px; padding:18px; }
+    .metric span { color:var(--grey); display:block; margin-bottom:8px; }
+    .metric strong { font-size:24px; color:var(--blue); }
+    .list-item { border:1px solid #e4e7ec; border-radius:14px; padding:15px; margin-bottom:12px; background:#fff; }
+    .badge { display:inline-block; padding:5px 10px; border-radius:999px; font-size:13px; font-weight:700; }
+    .pending { background:#fff4e5; color:#9a4d00; }
+    .matched { background:#eaf3fc; color:var(--blue); }
+    .verified { background:var(--green-light); color:var(--green); }
+    .flow-step { border-left:6px solid #98a2b3; padding:12px 14px; background:#f8fafc; border-radius:10px; margin-bottom:10px; font-weight:700; }
+    .flow-step.complete { border-left-color:var(--green); background:var(--green-light); }
+    .check-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .check-grid label { font-weight:400; border:1px solid var(--border); padding:10px; border-radius:12px; }
+    footer { text-align:center; padding:30px 16px; color:var(--grey); }
+    @media(max-width:700px){
+      header { align-items:flex-start; padding:18px; }
+      header img { width:72px; height:72px; }
+      header h1 { font-size:24px; }
+      .grid,.metrics { grid-template-columns:1fr; }
+      .card { padding:20px; }
+      .card h2 { font-size:25px; }
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <img
-      src="sureway-logo.png"
-      alt="SureWay logo"
-      onerror="this.style.display='none'"
-    />
+<header>
+  <img src="sureway-logo.png" alt="SureWay logo" onerror="this.style.display='none'" />
+  <div>
+    <h1>SureWay Market Access AI</h1>
+    <p>SMEs • Logistics • Energy Intelligence</p>
+    <p>SureWay Integrated Technology Solutions Ltd | RC 8481374</p>
+  </div>
+</header>
 
-    <div>
-      <h1>SureWay Market Access AI</h1>
-      <p>SMEs • Logistics • Energy Intelligence</p>
-      <p>SureWay Integrated Technology Solutions Ltd | RC 8481374</p>
+<nav id="nav">
+  <button class="active" data-tab="onboard">Onboard</button>
+  <button data-tab="smes">SMEs</button>
+  <button data-tab="cargo">Cargo</button>
+  <button data-tab="fuel">Fuel</button>
+  <button data-tab="manufacturer">Manufacturer</button>
+  <button data-tab="admin">Admin</button>
+  <button data-tab="insights">Insights</button>
+</nav>
+
+<main>
+<section id="onboard" class="tab active">
+  <div class="card">
+    <h2>Partner Onboarding</h2>
+    <div class="grid">
+      <div><label>User Category *</label><select id="category">
+        <option>SME Buyer</option><option>Farmer</option><option>Truck Owner</option>
+        <option>Driver</option><option>Fuel Station</option><option>Manufacturer/Supplier</option>
+      </select></div>
+      <div><label>Full Name / Company Name *</label><input id="name" /></div>
+      <div><label>Phone Number *</label><input id="phone" type="tel" placeholder="+234..." /></div>
+      <div><label>Location *</label><input id="location" placeholder="New-Bussa, Niger State" /></div>
+      <div class="full"><button class="primary" id="savePartnerBtn">Save Partner</button></div>
     </div>
-  </header>
-
-  <nav>
-    <button class="active" onclick="showTab('onboard', this)">Onboard</button>
-    <button onclick="showTab('smes', this)">SMEs</button>
-    <button onclick="showTab('cargo', this)">Cargo</button>
-    <button onclick="showTab('fuel', this)">Fuel</button>
-    <button onclick="showTab('manufacturer', this)">Manufacturer</button>
-    <button onclick="showTab('admin', this)">Admin</button>
-    <button onclick="showTab('insights', this)">Insights</button>
-  </nav>
-
-  <main>
-    <!-- ONBOARDING -->
-    <section id="onboard" class="tab">
-      <div class="card">
-        <h2>Partner Onboarding</h2>
-
-        <div class="grid">
-          <div>
-            <label for="category">User Category</label>
-            <select id="category">
-              <option>SME Buyer</option>
-              <option>Farmer</option>
-              <option>Truck Owner</option>
-              <option>Driver</option>
-              <option>Fuel Station</option>
-              <option>Manufacturer/Supplier</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="name">Full Name / Company Name</label>
-            <input id="name" placeholder="e.g. Azeez Motors / David Aremu" />
-          </div>
-
-          <div>
-            <label for="phone">Phone Number</label>
-            <input id="phone" type="tel" placeholder="+234..." />
-          </div>
-
-          <div>
-            <label for="location">Location</label>
-            <input id="location" placeholder="New-Bussa, Niger State" />
-          </div>
-
-          <div class="full">
-            <button class="primary" onclick="savePartner()">Save Partner</button>
-          </div>
-        </div>
-
-        <div id="partnerMessage"></div>
-      </div>
-
-      <div class="card">
-        <h2>Truck Owner Registration</h2>
-
-        <div class="grid">
-          <div>
-            <label for="truckOwner">Owner / Company Name</label>
-            <input id="truckOwner" placeholder="Truck owner or company name" />
-          </div>
-
-          <div>
-            <label for="plate">Registered Plate Number</label>
-            <input id="plate" placeholder="e.g. LAG-123-XA" />
-          </div>
-
-          <div>
-            <label for="truckType">Truck Type</label>
-            <select id="truckType">
-              <option>Trailer</option>
-              <option>Tanker</option>
-              <option>Covered Truck</option>
-              <option>Refrigerated Truck</option>
-              <option>Tipper</option>
-              <option>Flatbed</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="capacity">Capacity / Tonnage</label>
-            <input id="capacity" type="number" placeholder="e.g. 30" />
-          </div>
-
-          <div>
-            <label for="truckLocation">Current Location</label>
-            <input id="truckLocation" placeholder="e.g. Lagos" />
-          </div>
-
-          <div>
-            <label for="routes">Preferred Routes</label>
-            <input id="routes" placeholder="e.g. Lagos - Kano" />
-          </div>
-
-          <div>
-            <label for="vehiclePapers">Vehicle Registration Papers</label>
-            <input id="vehiclePapers" type="file" />
-          </div>
-
-          <div>
-            <label for="roadworthiness">Roadworthiness Document</label>
-            <input id="roadworthiness" type="file" />
-          </div>
-
-          <div>
-            <label for="insurance">Vehicle Insurance</label>
-            <input id="insurance" type="file" />
-          </div>
-
-          <div>
-            <label for="ownershipProof">Proof of Ownership</label>
-            <input id="ownershipProof" type="file" />
-          </div>
-
-          <div class="full">
-            <button class="primary" onclick="registerTruck()">
-              Complete Truck Registration
-            </button>
-          </div>
-        </div>
-
-        <div id="truckMessage"></div>
-      </div>
-
-      <div class="card">
-        <h2>Driver Registration</h2>
-
-        <div class="grid">
-          <div>
-            <label for="driverName">Driver Full Name</label>
-            <input id="driverName" placeholder="Driver full name" />
-          </div>
-
-          <div>
-            <label for="driverPhone">Phone Number</label>
-            <input id="driverPhone" type="tel" placeholder="+234..." />
-          </div>
-
-          <div>
-            <label for="license">Valid Driver's Licence Number</label>
-            <input id="license" placeholder="Driver's licence number" />
-          </div>
-
-          <div>
-            <label for="experience">Years of Experience</label>
-            <input id="experience" type="number" placeholder="Years" />
-          </div>
-
-          <div>
-            <label for="vehicleClass">Vehicle Category Allowed</label>
-            <input id="vehicleClass" placeholder="e.g. Class E" />
-          </div>
-
-          <div>
-            <label for="driverLocation">Current Location</label>
-            <input id="driverLocation" placeholder="e.g. Ilorin" />
-          </div>
-
-          <div>
-            <label for="driverRoute">Preferred Routes</label>
-            <input id="driverRoute" placeholder="e.g. Lagos - Kano" />
-          </div>
-
-          <div>
-            <label for="licenseUpload">Driver's Licence Upload</label>
-            <input id="licenseUpload" type="file" />
-          </div>
-
-          <div class="full">
-            <button class="primary" onclick="registerDriver()">
-              Complete Driver Registration
-            </button>
-          </div>
-        </div>
-
-        <div id="driverMessage"></div>
-      </div>
-    </section>
-
-    <!-- SME DEMAND -->
-    <section id="smes" class="tab hidden">
-      <div class="card">
-        <h2>SMEs Connect AI</h2>
-
-        <div class="grid">
-          <div>
-            <label for="product">Product Needed</label>
-            <input id="product" placeholder="Dangote cement, flour, fertilizer" />
-          </div>
-
-          <div>
-            <label for="quantity">Quantity</label>
-            <input id="quantity" type="number" placeholder="500" />
-          </div>
-
-          <div>
-            <label for="unit">Unit</label>
-            <select id="unit">
-              <option>Bags</option>
-              <option>Cartons</option>
-              <option>Tonnes</option>
-              <option>Units</option>
-              <option>Litres</option>
-              <option>Kilograms</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="smeLocation">Buyer Location</label>
-            <input id="smeLocation" placeholder="New-Bussa, Niger State" />
-          </div>
-
-          <div>
-            <label for="supplier">Preferred Supplier / Manufacturer</label>
-            <input id="supplier" placeholder="Dangote, BUA, Indorama or optional" />
-          </div>
-
-          <div>
-            <label for="needTransport">Transport Required?</label>
-            <select id="needTransport">
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="deliveryDate">Preferred Delivery Date</label>
-            <input id="deliveryDate" type="date" />
-          </div>
-
-          <div>
-            <label for="buyerNote">Special Requirement</label>
-            <input id="buyerNote" placeholder="Optional delivery instruction" />
-          </div>
-
-          <div class="full">
-            <button class="primary" onclick="submitSMERequest()">
-              Submit SME Request
-            </button>
-          </div>
-        </div>
-
-        <p class="muted">
-          Demo mode: searching verified manufacturers and distributors,
-          including Dangote, BUA, Indorama, Flour Mills and approved partners.
-        </p>
-
-        <div id="smeMessage"></div>
-      </div>
-
-      <div class="card">
-        <h2>Aggregated Demand</h2>
-        <div id="demandList">
-          <p class="muted">No demand submitted yet.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CARGO -->
-    <section id="cargo" class="tab hidden">
-      <div class="card">
-        <h2>CargoConnectAI Load</h2>
-
-        <div class="grid">
-          <div>
-            <label for="cargoProduct">Cargo / Product Type</label>
-            <input id="cargoProduct" placeholder="e.g. Dangote flour" />
-          </div>
-
-          <div>
-            <label for="cargoQuantity">Quantity</label>
-            <input id="cargoQuantity" type="number" placeholder="1200" />
-          </div>
-
-          <div>
-            <label for="tonnage">Weight / Tonnage</label>
-            <input id="tonnage" type="number" placeholder="e.g. 30" />
-          </div>
-
-          <div>
-            <label for="origin">Pickup Origin</label>
-            <input id="origin" placeholder="e.g. Obajana, Kogi State" />
-          </div>
-
-          <div>
-            <label for="destination">Destination</label>
-            <input id="destination" placeholder="e.g. Kano" />
-          </div>
-
-          <div>
-            <label for="truckRequired">Truck Requirement</label>
-            <select id="truckRequired">
-              <option>Trailer</option>
-              <option>Tanker</option>
-              <option>Covered Truck</option>
-              <option>Refrigerated Truck</option>
-              <option>Tipper</option>
-              <option>Flatbed</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="cargoDate">Pickup Date</label>
-            <input id="cargoDate" type="date" />
-          </div>
-
-          <div>
-            <label for="cargoContact">Contact Number</label>
-            <input id="cargoContact" type="tel" placeholder="+234..." />
-          </div>
-
-          <div class="full">
-            <button class="primary" onclick="createCargo(false)">
-              Post Cargo Request
-            </button>
-          </div>
-        </div>
-
-        <div id="cargoMessage"></div>
-      </div>
-
-      <div class="card">
-        <h2>Active Cargo Requests</h2>
-        <div id="cargoList">
-          <p class="muted">No cargo requests yet.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Available Trucks</h2>
-        <div id="truckList">
-          <p class="muted">No registered trucks yet.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FUEL -->
-    <section id="fuel" class="tab hidden">
-      <div class="card">
-        <h2>SFA/Pay4Pump Fuel Support</h2>
-
-        <div class="grid">
-          <div>
-            <label for="fuelType">Fuel Type</label>
-            <select id="fuelType">
-              <option>Diesel</option>
-              <option>Petrol</option>
-              <option>CNG</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="fuelLitres">Quantity Required</label>
-            <input id="fuelLitres" type="number" placeholder="e.g. 300" />
-          </div>
-
-          <div>
-            <label for="fuelStation">Preferred Station</label>
-            <select id="fuelStation">
-              <option>AA Rano</option>
-              <option>Oando</option>
-              <option>TotalEnergies</option>
-              <option>NNPC Retail</option>
-              <option>Bovas</option>
-              <option>Shafa</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="vehiclePlate">Vehicle Plate Number</label>
-            <input id="vehiclePlate" placeholder="e.g. LAG-123-XA" />
-          </div>
-
-          <div class="full">
-            <button class="secondary" onclick="bookFuelManually()">
-              Book Fuel
-            </button>
-          </div>
-        </div>
-
-        <div id="fuelMessage"></div>
-      </div>
-
-      <div class="card">
-        <h2>Fuel Requests Generated</h2>
-        <div id="fuelList">
-          <p class="muted">No fuel support request yet.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- MANUFACTURER -->
-    <section id="manufacturer" class="tab hidden">
-      <div class="card">
-        <h2>Manufacturer Partner Portal</h2>
-
-        <div class="notice">
-          This demo portal shows how manufacturers can view aggregated SME
-          demand, logistics availability and energy requirements.
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Market Intelligence</h2>
-
-        <div class="metrics">
-          <div class="metric">
-            <span>Total Demand Captured</span>
-            <strong id="manufacturerDemand">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Buying Clusters</span>
-            <strong id="clusterCount">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Cargo Loads Created</span>
-            <strong id="manufacturerCargo">0</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Verified Manufacturers</h2>
-
-        <div class="two-column">
-          <div class="manufacturer-box">
-            <h3>Dangote Cement</h3>
-            <p class="muted">Cement • Obajana, Kogi State</p>
-          </div>
-
-          <div class="manufacturer-box">
-            <h3>BUA Cement</h3>
-            <p class="muted">Cement • Okpella and Sokoto</p>
-          </div>
-
-          <div class="manufacturer-box">
-            <h3>Flour Mills of Nigeria</h3>
-            <p class="muted">Flour and food products • Apapa, Lagos</p>
-          </div>
-
-          <div class="manufacturer-box">
-            <h3>Dangote Refinery</h3>
-            <p class="muted">Fuel and petrochemicals • Lekki, Lagos</p>
-          </div>
-
-          <div class="manufacturer-box">
-            <h3>Indorama Fertilizer</h3>
-            <p class="muted">Fertilizer • Eleme, Rivers State</p>
-          </div>
-
-          <div class="manufacturer-box">
-            <h3>Partner Suppliers</h3>
-            <p class="muted">Verified distributors and regional wholesalers</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Demand Intelligence</h2>
-        <div id="manufacturerDemandList">
-          <p class="muted">No market demand data yet.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Manufacturer Benefits</h2>
-
-        <div class="flow">
-          <div class="flow-step complete">Direct access to verified SME demand</div>
-          <div class="flow-step complete">Improved production and allocation planning</div>
-          <div class="flow-step complete">Reduced distribution inefficiency</div>
-          <div class="flow-step complete">Lower dependence on informal middlemen</div>
-          <div class="flow-step complete">Real-time market and logistics intelligence</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ADMIN -->
-    <section id="admin" class="tab hidden">
-      <div class="card">
-        <h2>SureWay Admin Command Center</h2>
-
-        <div class="metrics">
-          <div class="metric">
-            <span>Registered Partners</span>
-            <strong id="adminPartners">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>SME Requests</span>
-            <strong id="adminRequests">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Cargo Loads</span>
-            <strong id="adminCargo">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Registered Trucks</span>
-            <strong id="adminTrucks">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Registered Drivers</span>
-            <strong id="adminDrivers">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Fuel Requests</span>
-            <strong id="adminFuel">0</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Partner Verification</h2>
-        <div id="partnerAdminList">
-          <p class="muted">No partners registered yet.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Cargo Operations Control</h2>
-        <div id="adminCargoList">
-          <p class="muted">No cargo operations yet.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Revenue Intelligence</h2>
-
-        <div class="revenue-row">
-          <span>Estimated SME transaction value</span>
-          <strong id="transactionValue">₦0</strong>
-        </div>
-
-        <div class="revenue-row">
-          <span>Estimated logistics value</span>
-          <strong id="logisticsValue">₦0</strong>
-        </div>
-
-        <div class="revenue-row">
-          <span>Estimated fuel transaction value</span>
-          <strong id="fuelValue">₦0</strong>
-        </div>
-
-        <div class="revenue-row">
-          <span>Estimated SureWay platform revenue</span>
-          <strong id="platformRevenue">₦0</strong>
-        </div>
-      </div>
-
-      <div class="card">
-        <button class="danger" onclick="resetDemoData()">
-          Reset Demo Data
-        </button>
-      </div>
-    </section>
-
-    <!-- INSIGHTS -->
-    <section id="insights" class="tab hidden">
-      <div class="card">
-        <h2>End-to-End Ecosystem Flow</h2>
-
-        <div class="flow">
-          <div id="flowSME" class="flow-step pending-step">
-            1. SMEs Connect AI Request
-          </div>
-
-          <div id="flowCargo" class="flow-step pending-step">
-            2. CargoConnectAI Load
-          </div>
-
-          <div id="flowTruck" class="flow-step pending-step">
-            3. Truck Match
-          </div>
-
-          <div id="flowFuel" class="flow-step pending-step">
-            4. SFA/Pay4Pump Fuel Support
-          </div>
-
-          <div id="flowDelivery" class="flow-step pending-step">
-            5. Supplier and Delivery Status
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Recent Ecosystem Activity</h2>
-        <div id="activityList">
-          <p class="muted">No ecosystem activity yet.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Impact Intelligence</h2>
-
-        <div class="metrics">
-          <div class="metric">
-            <span>Total Demand Units</span>
-            <strong id="impactDemand">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Estimated Fuel Litres</span>
-            <strong id="impactFuel">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>Jobs/Partners Connected</span>
-            <strong id="impactPartners">0</strong>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="company-footer">
-    SureWay Integrated Technology Solutions Ltd • RC 8481374<br />
-    Demo MVP for SMEs, logistics, energy intelligence and industrial market access.
+    <div id="partnerMessage" class="message"></div>
   </div>
 
-  <script>
-    const STORAGE_KEY = "surewayMarketAccessAI";
-const API_BASE_URL =
-  "https://sureway-market-access-api.onrender.com";
-    let state = {
-      partners: [],
-      trucks: [],
-      drivers: [],
-      demands: [],
-      cargos: [],
-      fuels: [],
-      activity: []
-    };
+  <div class="card">
+    <h2>Truck Owner Registration</h2>
+    <div class="grid">
+      <div><label>Owner / Company Name *</label><input id="truckOwner" /></div>
+      <div><label>Registered Plate Number *</label><input id="plate" placeholder="LAG-123-XX" /></div>
+      <div><label>Truck Make *</label><input id="truckMake" placeholder="HOWO, MAN, DAF or Volvo" /></div>
+      <div><label>Truck Model</label><input id="truckModel" /></div>
+      <div><label>Truck Type *</label><select id="truckType">
+        <option value="">Select truck type</option><option>Flatbed Truck</option><option>Box Truck</option>
+        <option>Tipper Truck</option><option>Tanker</option><option>Trailer</option><option>Low-bed Truck</option>
+        <option>Refrigerated Truck</option><option>Container Truck</option><option>General Haulage Truck</option>
+      </select></div>
+      <div><label>Load Capacity in Tonnes *</label><input id="capacity" type="number" min="0.1" step="0.1" /></div>
+      <div><label>Fuel Type *</label><select id="truckFuelType">
+        <option value="">Select fuel type</option><option>Diesel</option><option>CNG</option><option>LNG</option>
+        <option>Petrol</option><option>Electric</option><option>Hybrid</option>
+      </select></div>
+      <div><label>Current Truck Location *</label><input id="truckLocation" /></div>
+      <div><label>Permanent Base Location</label><input id="truckBaseLocation" /></div>
+      <div><label>Preferred Routes *</label><input id="truckRoutes" placeholder="Lagos-Abuja, Lagos-Kano" /></div>
+      <div><label>Availability Status *</label><select id="truckAvailability">
+        <option value="">Select availability</option><option>Available Now</option><option>Available Within 24 Hours</option>
+        <option>Available Within 3 Days</option><option>On Trip</option><option>Under Maintenance</option><option>Not Available</option>
+      </select></div>
+      <div><label>Next Available Date</label><input id="truckNextAvailableDate" type="date" /></div>
+      <div><label>Insurance Status *</label><select id="truckInsuranceStatus">
+        <option value="">Select insurance status</option><option>Valid</option><option>Expired</option><option>Pending Renewal</option><option>Not Available</option>
+      </select></div>
+      <div><label>Roadworthiness Status *</label><select id="truckRoadworthinessStatus">
+        <option value="">Select roadworthiness status</option><option>Valid</option><option>Expired</option><option>Pending Renewal</option><option>Not Available</option>
+      </select></div>
+      <div><label>Driver Assignment *</label><select id="truckDriverAssigned">
+        <option value="">Select driver arrangement</option><option>Driver Already Assigned</option><option>Driver Needed</option>
+        <option>Owner Is the Driver</option><option>Assign Later</option>
+      </select></div>
+      <div><label>Driver Name</label><input id="truckDriverName" /></div>
+      <div><label>Driver Phone Number</label><input id="truckDriverPhone" type="tel" /></div>
+      <div><label>GPS Tracker</label><select id="truckGpsInstalled">
+        <option>Not specified</option><option>Installed</option><option>Not Installed</option><option>Installation Planned</option>
+      </select></div>
+      <div class="full"><label>Cargo Categories</label><div class="check-grid" id="cargoChecks">
+        <label><input type="checkbox" value="Cement"> Cement</label>
+        <label><input type="checkbox" value="Flour"> Flour</label>
+        <label><input type="checkbox" value="Sugar"> Sugar</label>
+        <label><input type="checkbox" value="Rice"> Rice</label>
+        <label><input type="checkbox" value="Fertilizer"> Fertilizer</label>
+        <label><input type="checkbox" value="Agricultural Produce"> Agricultural Produce</label>
+        <label><input type="checkbox" value="Construction Materials"> Construction Materials</label>
+        <label><input type="checkbox" value="Container Cargo"> Container Cargo</label>
+        <label><input type="checkbox" value="FMCG"> FMCG</label>
+        <label><input type="checkbox" value="General Goods"> General Goods</label>
+      </div></div>
+      <div class="full"><label>Additional Information</label><textarea id="truckSpecialNotes"></textarea></div>
+      <div class="full"><label><input id="truckVerificationConsent" type="checkbox" style="width:auto"> I confirm that the supplied information is accurate and consent to SureWay verification. *</label></div>
+      <div class="full"><button class="primary" id="registerTruckBtn">Register Truck</button></div>
+    </div>
+    <div id="truckMessage" class="message"></div>
+  </div>
 
-    function loadState() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+  <div class="card">
+    <h2>Driver Registration</h2>
+    <div class="grid">
+      <div><label>Driver Full Name *</label><input id="driverName" /></div>
+      <div><label>Phone Number *</label><input id="driverPhone" type="tel" /></div>
+      <div><label>Valid Driver's Licence Number *</label><input id="license" /></div>
+      <div><label>Years of Experience</label><input id="experience" type="number" min="0" /></div>
+      <div><label>Vehicle Category Allowed</label><input id="vehicleClass" placeholder="Class E" /></div>
+      <div><label>Current Location *</label><input id="driverLocation" /></div>
+      <div class="full"><label>Preferred Routes</label><input id="driverRoute" /></div>
+      <div class="full"><button class="primary" id="registerDriverBtn">Complete Driver Registration</button></div>
+    </div>
+    <div id="driverMessage" class="message"></div>
+  </div>
+</section>
 
-        if (saved) {
-          const parsed = JSON.parse(saved);
+<section id="smes" class="tab">
+  <div class="card">
+    <h2>SMEs Connect AI</h2>
+    <div class="grid">
+      <div><label>Product Needed *</label><input id="product" placeholder="Dangote cement, flour, fertilizer" /></div>
+      <div><label>Quantity *</label><input id="quantity" type="number" min="1" /></div>
+      <div><label>Unit</label><select id="unit"><option>Bags</option><option>Cartons</option><option>Tonnes</option><option>Units</option><option>Litres</option><option>Kilograms</option></select></div>
+      <div><label>Buyer Location *</label><input id="smeLocation" /></div>
+      <div><label>Preferred Supplier / Manufacturer</label><input id="supplier" /></div>
+      <div><label>Transport Required?</label><select id="needTransport"><option value="yes">Yes</option><option value="no">No</option></select></div>
+      <div><label>Preferred Delivery Date</label><input id="deliveryDate" type="date" /></div>
+      <div><label>Special Requirement</label><input id="buyerNote" /></div>
+      <div class="full"><button class="primary" id="submitSmeBtn">Submit SME Request</button></div>
+    </div>
+    <div id="smeMessage" class="message"></div>
+  </div>
+  <div class="card"><h2>Aggregated Demand</h2><div id="demandList"><p class="muted">No demand submitted yet.</p></div></div>
+</section>
 
-          state = {
-            partners: parsed.partners || [],
-            trucks: parsed.trucks || [],
-            drivers: parsed.drivers || [],
-            demands: parsed.demands || [],
-            cargos: parsed.cargos || [],
-            fuels: parsed.fuels || [],
-            activity: parsed.activity || []
-          };
-        }
-      } catch (error) {
-        console.error("Unable to load saved data:", error);
-      }
-    }
+<section id="cargo" class="tab">
+  <div class="card">
+    <h2>CargoConnectAI Load</h2>
+    <div class="grid">
+      <div><label>Cargo / Product Type *</label><input id="cargoProduct" /></div>
+      <div><label>Quantity</label><input id="cargoQuantity" type="number" min="1" /></div>
+      <div><label>Weight / Tonnage *</label><input id="tonnage" type="number" min="0.1" step="0.1" /></div>
+      <div><label>Pickup Origin *</label><input id="origin" /></div>
+      <div><label>Destination *</label><input id="destination" /></div>
+      <div><label>Truck Requirement</label><select id="truckRequired"><option>Trailer</option><option>Tanker</option><option>Covered Truck</option><option>Refrigerated Truck</option><option>Tipper</option><option>Flatbed</option></select></div>
+      <div><label>Pickup Date</label><input id="cargoDate" type="date" /></div>
+      <div><label>Contact Number</label><input id="cargoContact" type="tel" /></div>
+      <div class="full"><button class="primary" id="postCargoBtn">Post Cargo Request</button></div>
+    </div>
+    <div id="cargoMessage" class="message"></div>
+  </div>
+  <div class="card"><h2>Active Cargo Requests</h2><div id="cargoList"><p class="muted">No cargo requests yet.</p></div></div>
+  <div class="card"><h2>Available Trucks</h2><div id="truckList"><p class="muted">No registered trucks yet.</p></div></div>
+</section>
 
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (error) {
-        console.error("Unable to save data:", error);
-      }
-    }
+<section id="fuel" class="tab">
+  <div class="card">
+    <h2>SFA/Pay4Pump Fuel Support</h2>
+    <div class="grid">
+      <div><label>Fuel Type</label><select id="fuelType"><option>Diesel</option><option>Petrol</option><option>CNG</option></select></div>
+      <div><label>Quantity Required</label><input id="fuelLitres" type="number" min="1" /></div>
+      <div><label>Preferred Station</label><select id="fuelStation"><option>AA Rano</option><option>Oando</option><option>TotalEnergies</option><option>NNPC Retail</option><option>Bovas</option><option>Shafa</option></select></div>
+      <div><label>Vehicle Plate Number</label><input id="vehiclePlate" /></div>
+      <div class="full"><button class="primary" id="bookFuelBtn">Book Fuel</button></div>
+    </div>
+    <div id="fuelMessage" class="message"></div>
+  </div>
+  <div class="card"><h2>Fuel Requests Generated</h2><div id="fuelList"><p class="muted">No fuel support request yet.</p></div></div>
+</section>
 
-    function value(id) {
-      return document.getElementById(id)?.value.trim() || "";
-    }
+<section id="manufacturer" class="tab">
+  <div class="card">
+    <h2>Manufacturer Partner Portal</h2>
+    <p class="muted">Aggregated SME demand, logistics availability and energy requirements.</p>
+    <div class="metrics">
+      <div class="metric"><span>Total Demand Captured</span><strong id="manufacturerDemand">0</strong></div>
+      <div class="metric"><span>Buying Clusters</span><strong id="clusterCount">0</strong></div>
+      <div class="metric"><span>Cargo Loads Created</span><strong id="manufacturerCargo">0</strong></div>
+    </div>
+  </div>
+  <div class="card"><h2>Verified Manufacturers</h2>
+    <div class="grid">
+      <div class="list-item"><h3>Dangote Cement</h3><p>Cement • Obajana, Kogi State</p></div>
+      <div class="list-item"><h3>BUA Cement</h3><p>Cement • Okpella and Sokoto</p></div>
+      <div class="list-item"><h3>Flour Mills of Nigeria</h3><p>Flour and food products • Apapa, Lagos</p></div>
+      <div class="list-item"><h3>Dangote Refinery</h3><p>Fuel and petrochemicals • Lekki, Lagos</p></div>
+      <div class="list-item"><h3>Indorama Fertilizer</h3><p>Fertilizer • Eleme, Rivers State</p></div>
+      <div class="list-item"><h3>Partner Suppliers</h3><p>Verified distributors and regional wholesalers</p></div>
+    </div>
+  </div>
+  <div class="card"><h2>Demand Intelligence</h2><div id="manufacturerDemandList"><p class="muted">No market demand data yet.</p></div></div>
+</section>
 
-    function numericValue(id) {
-      const number = Number(document.getElementById(id)?.value || 0);
-      return Number.isFinite(number) ? number : 0;
-    }
+<section id="admin" class="tab">
+  <div class="card"><h2>SureWay Admin Command Center</h2>
+    <div class="metrics">
+      <div class="metric"><span>Registered Partners</span><strong id="adminPartners">0</strong></div>
+      <div class="metric"><span>SME Requests</span><strong id="adminRequests">0</strong></div>
+      <div class="metric"><span>Cargo Loads</span><strong id="adminCargo">0</strong></div>
+      <div class="metric"><span>Registered Trucks</span><strong id="adminTrucks">0</strong></div>
+      <div class="metric"><span>Registered Drivers</span><strong id="adminDrivers">0</strong></div>
+      <div class="metric"><span>Fuel Requests</span><strong id="adminFuel">0</strong></div>
+    </div>
+  </div>
+  <div class="card"><h2>Partner Verification</h2><div id="partnerAdminList"><p class="muted">No partners registered yet.</p></div></div>
+  <div class="card"><h2>Cargo Operations Control</h2><div id="adminCargoList"><p class="muted">No cargo operations yet.</p></div></div>
+  <div class="card"><h2>Revenue Intelligence</h2>
+    <div class="metrics">
+      <div class="metric"><span>Estimated SME transaction value</span><strong id="transactionValue">₦0</strong></div>
+      <div class="metric"><span>Estimated logistics value</span><strong id="logisticsValue">₦0</strong></div>
+      <div class="metric"><span>Estimated fuel transaction value</span><strong id="fuelValue">₦0</strong></div>
+      <div class="metric"><span>Estimated SureWay platform revenue</span><strong id="platformRevenue">₦0</strong></div>
+    </div>
+    <p><button class="danger" id="resetBtn">Reset Local Demo Data</button></p>
+  </div>
+</section>
 
-    function formatMoney(amount) {
-      return "₦" + Math.round(amount).toLocaleString();
-    }
+<section id="insights" class="tab">
+  <div class="card"><h2>End-to-End Ecosystem Flow</h2>
+    <div id="flowSME" class="flow-step">1. SMEs Connect AI Request</div>
+    <div id="flowCargo" class="flow-step">2. CargoConnectAI Load</div>
+    <div id="flowTruck" class="flow-step">3. Truck Match</div>
+    <div id="flowFuel" class="flow-step">4. SFA/Pay4Pump Fuel Support</div>
+    <div id="flowDelivery" class="flow-step">5. Supplier and Delivery Status</div>
+  </div>
+  <div class="card"><h2>Recent Ecosystem Activity</h2><div id="activityList"><p class="muted">No ecosystem activity yet.</p></div></div>
+  <div class="card"><h2>Impact Intelligence</h2>
+    <div class="metrics">
+      <div class="metric"><span>Total Demand Units</span><strong id="impactDemand">0</strong></div>
+      <div class="metric"><span>Estimated Fuel Litres</span><strong id="impactFuel">0</strong></div>
+      <div class="metric"><span>Jobs/Partners Connected</span><strong id="impactPartners">0</strong></div>
+    </div>
+  </div>
+</section>
+</main>
 
-    function showTab(id, button) {
-      document.querySelectorAll(".tab").forEach((tab) => {
-        tab.classList.add("hidden");
-      });
+<footer>SureWay Integrated Technology Solutions Ltd • RC 8481374<br>Recovery Edition — SMEs, logistics, energy intelligence and industrial market access.</footer>
 
-      const selected = document.getElementById(id);
+<script>
+"use strict";
+const API_BASE_URL = "https://sureway-market-access-api.onrender.com";
+const STORAGE_KEY = "surewayMarketAccessRecoveryV2";
+const emptyState = () => ({partners:[],trucks:[],drivers:[],demands:[],cargos:[],fuels:[],activity:[]});
+let state = emptyState();
 
-      if (selected) {
-        selected.classList.remove("hidden");
-      }
+const $ = id => document.getElementById(id);
+const value = id => ($(id)?.value || "").trim();
+const numberValue = id => { const n = Number($(id)?.value || 0); return Number.isFinite(n) ? n : 0; };
+const esc = text => String(text ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const money = amount => "₦" + Math.round(Number(amount)||0).toLocaleString();
 
-      document.querySelectorAll("nav button").forEach((navButton) => {
-        navButton.classList.remove("active");
-      });
+function loadState(){
+  try { const saved=localStorage.getItem(STORAGE_KEY); state=saved ? {...emptyState(),...JSON.parse(saved)} : emptyState(); }
+  catch(e){ state=emptyState(); }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }
+function showMessage(id,text,type="success"){ const box=$(id); if(box) box.innerHTML=`<div class="notice ${type}">${esc(text)}</div>`; }
+function addActivity(message){ state.activity.unshift({message,date:new Date().toLocaleString()}); state.activity=state.activity.slice(0,50); }
+function selectedCargoTypes(){ return [...document.querySelectorAll('#cargoChecks input:checked')].map(x=>x.value); }
 
-      if (button) {
-        button.classList.add("active");
-      }
-
-      render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function addActivity(message) {
-      state.activity.unshift({
-        message,
-        date: new Date().toLocaleString()
-      });
-
-      state.activity = state.activity.slice(0, 50);
-    }
-
-    function showMessage(elementId, text, type = "success") {
-      const box = document.getElementById(elementId);
-
-      if (!box) return;
-
-      box.innerHTML = `<div class="${type}">${text}</div>`;
-    }
-
-    async function savePartner() {
-  const category = value("category");
-  const name = value("name");
-  const phone = value("phone");
-  const location = value("location");
-
-  if (!name || !phone || !location) {
-    showMessage(
-      "partnerMessage",
-      "Please enter the partner name, phone number and location.",
-      "warning"
-    );
-    return;
-  }
-
-  showMessage(
-    "partnerMessage",
-    "Submitting registration to SureWay cloud...",
-    "success"
-  );
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        fullName: name,
-        phone: phone,
-        location: location,
-        userType: category || "Partner",
-        businessName: name,
-        productInterest: category || ""
-      })
+async function postApi(endpoint,payload){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),45000);
+  try{
+    const response=await fetch(`${API_BASE_URL}${endpoint}`,{
+      method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:controller.signal
     });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        result.message || "Registration could not be completed."
-      );
-    }
-
-    state.partners.push({
-      id: result.registrationId || Date.now(),
-      category,
-      name,
-      phone,
-      location,
-      status: "Pending Verification"
-    });
-
-    addActivity(
-      `${category || "Partner"} ${name} registered from ${location}.`
-    );
-
-    saveState();
-    render();
-
-    showMessage(
-      "partnerMessage",
-      "Partner registered successfully and saved to MongoDB.",
-      "success"
-    );
-  } catch (error) {
-    console.error("Partner registration error:", error);
-
-    showMessage(
-      "partnerMessage",
-      error.message ||
-        "Unable to connect to the SureWay server. Please try again.",
-      "warning"
-    );
-  }
+    const text=await response.text();
+    let data={}; try{ data=text?JSON.parse(text):{}; }catch{ data={message:text}; }
+    if(!response.ok) throw new Error(data.message || `Server error ${response.status}`);
+    return data;
+  } finally { clearTimeout(timeout); }
 }
 
-    <div class="card">
-  <h2>Truck Registration</h2>
-  <p class="muted">
-    Register a truck for CargoConnectAI load matching and verification.
-  </p>
-
-  <h3>1. Owner Information</h3>
-
-  <label for="truckOwnerType">Owner Type *</label>
-  <select id="truckOwnerType">
-    <option value="">Select owner type</option>
-    <option value="Individual">Individual</option>
-    <option value="Registered Company">Registered Company</option>
-    <option value="Transport Cooperative">Transport Cooperative</option>
-    <option value="Fleet Operator">Fleet Operator</option>
-  </select>
-
-  <label for="truckOwner">Owner / Company Name *</label>
-  <input
-    id="truckOwner"
-    type="text"
-    placeholder="Enter owner or company name"
-  />
-
-  <label for="truckOwnerPhone">Phone Number *</label>
-  <input
-    id="truckOwnerPhone"
-    type="tel"
-    placeholder="+234..."
-  />
-
-  <label for="truckOwnerEmail">Email Address</label>
-  <input
-    id="truckOwnerEmail"
-    type="email"
-    placeholder="Optional email address"
-  />
-
-  <label for="truckCompanyName">Registered Company Name</label>
-  <input
-    id="truckCompanyName"
-    type="text"
-    placeholder="Leave blank for individual owners"
-  />
-
-  <label for="truckCacNumber">CAC Registration Number</label>
-  <input
-    id="truckCacNumber"
-    type="text"
-    placeholder="Optional CAC number"
-  />
-
-  <h3>2. Truck Information</h3>
-
-  <label for="plate">Vehicle Plate Number *</label>
-  <input
-    id="plate"
-    type="text"
-    placeholder="Example: ABC-123-XY"
-  />
-
-  <label for="truckMake">Truck Make *</label>
-  <input
-    id="truckMake"
-    type="text"
-    placeholder="Example: HOWO, MAN, DAF or Volvo"
-  />
-
-  <label for="truckModel">Truck Model</label>
-  <input
-    id="truckModel"
-    type="text"
-    placeholder="Optional truck model"
-  />
-
-  <label for="truckType">Truck Type *</label>
-  <select id="truckType">
-    <option value="">Select truck type</option>
-    <option value="Flatbed Truck">Flatbed Truck</option>
-    <option value="Box Truck">Box Truck</option>
-    <option value="Tipper Truck">Tipper Truck</option>
-    <option value="Tanker">Tanker</option>
-    <option value="Trailer">Trailer</option>
-    <option value="Low-bed Truck">Low-bed Truck</option>
-    <option value="Refrigerated Truck">Refrigerated Truck</option>
-    <option value="Container Truck">Container Truck</option>
-    <option value="Cement Bulk Tanker">Cement Bulk Tanker</option>
-    <option value="General Haulage Truck">General Haulage Truck</option>
-    <option value="Other">Other</option>
-  </select>
-
-  <label for="capacity">Load Capacity in Tonnes *</label>
-  <input
-    id="capacity"
-    type="number"
-    min="1"
-    step="0.1"
-    placeholder="Example: 30"
-  />
-
-  <label for="truckFuelType">Fuel Type *</label>
-  <select id="truckFuelType">
-    <option value="">Select fuel type</option>
-    <option value="Diesel">Diesel</option>
-    <option value="CNG">CNG</option>
-    <option value="LNG">LNG</option>
-    <option value="Petrol">Petrol</option>
-    <option value="Electric">Electric</option>
-    <option value="Hybrid">Hybrid</option>
-  </select>
-
-  <h3>3. Cargo Capability</h3>
-  <p class="muted">Select every cargo category the truck can carry.</p>
-
-  <label>
-    <input type="checkbox" name="truckCargoType" value="Cement" />
-    Cement
-  </label>
-
-  <label>
-    <input type="checkbox" name="truckCargoType" value="Flour" />
-    Flour
-  </label>
-
-  <label>
-    <input type="checkbox" name="truckCargoType" value="Sugar" />
-    Sugar
-  </label>
-
-  <label>
-    <input type="checkbox" name="truckCargoType" value="Rice" />
-    Rice
-  </label>
-
-  <label>
-    <input type="checkbox" name="truckCargoType" value="Fertilizer" />
-    Fertilizer
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      name="truckCargoType"
-      value="Agricultural Produce"
-    />
-    Agricultural Produce
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      name="truckCargoType"
-      value="Construction Materials"
-    />
-    Construction Materials
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      name="truckCargoType"
-      value="Container Cargo"
-    />
-    Container Cargo
-  </label>
-
-  <label>
-    <input type="checkbox" name="truckCargoType" value="FMCG" />
-    FMCG
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      name="truckCargoType"
-      value="General Goods"
-    />
-    General Goods
-  </label>
-
-  <h3>4. Location and Operations</h3>
-
-  <label for="truckLocation">Current Truck Location *</label>
-  <input
-    id="truckLocation"
-    type="text"
-    placeholder="Example: Lagos, Nigeria"
-  />
-
-  <label for="truckBaseLocation">Permanent Base Location</label>
-  <input
-    id="truckBaseLocation"
-    type="text"
-    placeholder="Optional base location"
-  />
-
-  <label for="truckRoutes">Preferred Routes *</label>
-  <input
-    id="truckRoutes"
-    type="text"
-    placeholder="Example: Lagos–Abuja, Lagos–Kano"
-  />
-
-  <label for="truckAvailability">Availability Status *</label>
-  <select id="truckAvailability">
-    <option value="">Select availability</option>
-    <option value="Available Now">Available Now</option>
-    <option value="Available Within 24 Hours">
-      Available Within 24 Hours
-    </option>
-    <option value="Available Within 3 Days">
-      Available Within 3 Days
-    </option>
-    <option value="On Trip">On Trip</option>
-    <option value="Under Maintenance">Under Maintenance</option>
-    <option value="Not Available">Not Available</option>
-  </select>
-
-  <label for="truckNextAvailableDate">Next Available Date</label>
-  <input id="truckNextAvailableDate" type="date" />
-
-  <h3>5. Compliance and Driver</h3>
-
-  <label for="truckInsuranceStatus">Insurance Status *</label>
-  <select id="truckInsuranceStatus">
-    <option value="">Select insurance status</option>
-    <option value="Valid">Valid</option>
-    <option value="Expired">Expired</option>
-    <option value="Pending Renewal">Pending Renewal</option>
-    <option value="Not Available">Not Available</option>
-  </select>
-
-  <label for="truckRoadworthinessStatus">
-    Roadworthiness Status *
-  </label>
-  <select id="truckRoadworthinessStatus">
-    <option value="">Select roadworthiness status</option>
-    <option value="Valid">Valid</option>
-    <option value="Expired">Expired</option>
-    <option value="Pending Renewal">Pending Renewal</option>
-    <option value="Not Available">Not Available</option>
-  </select>
-
-  <label for="truckDriverAssigned">Driver Assignment *</label>
-  <select id="truckDriverAssigned">
-    <option value="">Select driver arrangement</option>
-    <option value="Driver Already Assigned">
-      Driver Already Assigned
-    </option>
-    <option value="Driver Needed">Driver Needed</option>
-    <option value="Owner Is the Driver">Owner Is the Driver</option>
-    <option value="Assign Later">Assign Later</option>
-  </select>
-
-  <label for="truckDriverName">Driver Name</label>
-  <input
-    id="truckDriverName"
-    type="text"
-    placeholder="Optional at this stage"
-  />
-
-  <label for="truckDriverPhone">Driver Phone Number</label>
-  <input
-    id="truckDriverPhone"
-    type="tel"
-    placeholder="Optional at this stage"
-  />
-
-  <label for="truckGpsInstalled">GPS Tracker</label>
-  <select id="truckGpsInstalled">
-    <option value="Not specified">Not specified</option>
-    <option value="Installed">Installed</option>
-    <option value="Not Installed">Not Installed</option>
-    <option value="Installation Planned">Installation Planned</option>
-  </select>
-
-  <label for="truckSpecialNotes">Additional Information</label>
-  <textarea
-    id="truckSpecialNotes"
-    rows="4"
-    placeholder="Optional operational or special-handling information"
-  ></textarea>
-
-  <label>
-    <input id="truckVerificationConsent" type="checkbox" />
-    I confirm that the supplied information is accurate and consent to
-    SureWay verification. *
-  </label>
-
-  <button type="button" onclick="registerTruck()">
-    Register Truck
-  </button>
-
-  <div id="truckMessage"></div>
-</div>
-async function registerTruck() {
-  const ownerType = value("truckOwnerType");
-  const ownerName = value("truckOwner");
-  const ownerPhone = value("truckOwnerPhone");
-  const email = value("truckOwnerEmail");
-  const companyName = value("truckCompanyName");
-  const cacNumber = value("truckCacNumber");
-
-  const plateNumber = value("plate");
-  const truckMake = value("truckMake");
-  const truckModel = value("truckModel");
-  const truckType = value("truckType");
-  const capacityTonnes = numericValue("capacity");
-  const fuelType = value("truckFuelType");
-
-  const currentLocation = value("truckLocation");
-  const baseLocation = value("truckBaseLocation");
-  const preferredRoutes = value("truckRoutes");
-  const availabilityStatus = value("truckAvailability");
-  const nextAvailableDate = value("truckNextAvailableDate");
-
-  const insuranceStatus = value("truckInsuranceStatus");
-  const roadworthinessStatus = value(
-    "truckRoadworthinessStatus"
-  );
-
-  const driverAssigned = value("truckDriverAssigned");
-  const driverName = value("truckDriverName");
-  const driverPhone = value("truckDriverPhone");
-  const gpsInstalled = value("truckGpsInstalled");
-  const specialNotes = value("truckSpecialNotes");
-
-  const verificationConsent =
-    document.getElementById("truckVerificationConsent")?.checked === true;
-
-  const cargoTypes = Array.from(
-    document.querySelectorAll(
-      'input[name="truckCargoType"]:checked'
-    )
-  ).map((checkbox) => checkbox.value);
-
-  if (
-    !ownerType ||
-    !ownerName ||
-    !ownerPhone ||
-    !plateNumber ||
-    !truckMake ||
-    !truckType ||
-    capacityTonnes <= 0 ||
-    !fuelType ||
-    !currentLocation ||
-    !preferredRoutes ||
-    cargoTypes.length === 0 ||
-    !availabilityStatus ||
-    !insuranceStatus ||
-    !roadworthinessStatus ||
-    !driverAssigned ||
-    !verificationConsent
-  ) {
-    showMessage(
-      "truckMessage",
-      "Please complete every compulsory field, select at least one cargo type and accept the verification consent.",
-      "warning"
-    );
-    return;
-  }
-
-  showMessage(
-    "truckMessage",
-    "Submitting truck registration to SureWay cloud...",
-    "success"
-  );
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/trucks`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ownerType,
-          ownerName,
-          ownerPhone,
-          email,
-          companyName,
-          cacNumber,
-          plateNumber,
-          truckMake,
-          truckModel,
-          truckType,
-          capacityTonnes,
-          fuelType,
-          currentLocation,
-          baseLocation,
-          preferredRoutes,
-          cargoTypes,
-          availabilityStatus,
-          nextAvailableDate,
-          insuranceStatus,
-          roadworthinessStatus,
-          driverAssigned,
-          driverName,
-          driverPhone,
-          gpsInstalled,
-          specialNotes,
-          verificationConsent
-        })
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        result.message ||
-          "Truck registration could not be completed."
-      );
-    }
-
-    state.trucks.push({
-      id: result.truckId || Date.now(),
-      owner: ownerName,
-      ownerPhone,
-      plate: plateNumber.toUpperCase(),
-      make: truckMake,
-      model: truckModel,
-      type: truckType,
-      capacity: capacityTonnes,
-      fuelType,
-      location: currentLocation,
-      routes: preferredRoutes,
-      cargoTypes,
-      availabilityStatus,
-      insuranceStatus,
-      roadworthinessStatus,
-      driverAssigned,
-      status: "Pending Verification"
-    });
-
-    addActivity(
-      `${ownerName} registered ${capacityTonnes}-ton ${truckType} with plate ${plateNumber.toUpperCase()}.`
-    );
-
-    saveState();
-    render();
-
-    showMessage(
-      "truckMessage",
-      "Truck registered successfully, saved to MongoDB and submitted for verification.",
-      "success"
-    );
-  } catch (error) {
-    console.error("Truck registration error:", error);
-
-    showMessage(
-      "truckMessage",
-      error.message ||
-        "Unable to connect to the SureWay server. Please try again.",
-      "warning"
-    );
-  }
+function showTab(tabId,button){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.id===tabId));
+  document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("active",x===button));
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
 }
-    function registerDriver() {
-      async function registerDriver() {
-  const name = value("driverName");
-  const phone = value("driverPhone");
-  const licenseNumber = value("license");
-  const experienceYears = numericValue("experience");
-  const vehicleClass = value("vehicleClass");
-  const currentLocation = value("driverLocation");
-  const preferredRoutes = value("driverRoute");
+document.querySelectorAll("#nav button").forEach(btn=>btn.addEventListener("click",()=>showTab(btn.dataset.tab,btn)));
 
-  if (!name || !phone || !licenseNumber || !currentLocation) {
-    showMessage(
-      "driverMessage",
-      "Please enter the driver's name, phone number, licence number and current location.",
-      "warning"
-    );
-    return;
+async function savePartner(){
+  const category=value("category"), name=value("name"), phone=value("phone"), location=value("location");
+  if(!name||!phone||!location){ showMessage("partnerMessage","Please enter the partner name, phone number and location.","warning"); return; }
+  $("savePartnerBtn").disabled=true;
+  showMessage("partnerMessage","Submitting registration to SureWay cloud...","success");
+  const payload={fullName:name,phone,location,userType:category,businessName:name,productInterest:category};
+  let cloudSaved=false;
+  try{
+    await postApi("/api/register",payload);
+    cloudSaved=true;
+  }catch(error){
+    console.warn("Partner cloud save failed; stored locally.",error);
   }
-
-  showMessage(
-    "driverMessage",
-    "Submitting driver registration to SureWay cloud...",
-    "success"
-  );
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/drivers`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name,
-          phone,
-          licenseNumber,
-          experienceYears,
-          vehicleClass,
-          currentLocation,
-          preferredRoutes
-        })
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        result.message ||
-          "Driver registration could not be completed."
-      );
-    }
-
-    state.drivers.push({
-      id: result.driverId || Date.now(),
-      name,
-      phone,
-      license: licenseNumber.toUpperCase(),
-      experience: experienceYears,
-      vehicleClass,
-      location: currentLocation,
-      routes: preferredRoutes,
-      status: "Pending Verification"
-    });
-
-    addActivity(
-      `Driver ${name} registered with licence ${licenseNumber.toUpperCase()} from ${currentLocation}.`
-    );
-
-    saveState();
-    render();
-
-    showMessage(
-      "driverMessage",
-      "Driver registered successfully, saved to MongoDB and submitted for verification.",
-      "success"
-    );
-  } catch (error) {
-    console.error("Driver registration error:", error);
-
-    showMessage(
-      "driverMessage",
-      error.message ||
-        "Unable to connect to the SureWay server. Please try again.",
-      "warning"
-    );
-  }
+  state.partners.unshift({id:Date.now(),name,phone,location,category,status:cloudSaved?"Pending Verification":"Saved Locally — Sync Pending"});
+  addActivity(`${category} partner ${name} registered from ${location}.`);
+  saveState(); render();
+  showMessage("partnerMessage",cloudSaved?"Partner registered successfully and saved to MongoDB.":"Partner saved safely on this device. Cloud sync is pending.","success");
+  $("savePartnerBtn").disabled=false;
 }
 
-    function submitSMERequest() {
-      const product = value("product");
-      const quantity = numericValue("quantity");
-      const unit = value("unit");
-      const location = value("smeLocation");
-      const supplier = value("supplier") || "Any verified supplier";
-      const transportRequired = value("needTransport");
-      const deliveryDate = value("deliveryDate");
-      const buyerNote = value("buyerNote");
-
-      if (!product || quantity <= 0 || !location) {
-        showMessage(
-          "smeMessage",
-          "Please enter the product, quantity and buyer location.",
-          "warning"
-        );
-        return;
-      }
-
-      const demand = {
-        id: Date.now(),
-        product,
-        quantity,
-        unit,
-        location,
-        supplier,
-        transportRequired,
-        deliveryDate,
-        buyerNote,
-        status: "Aggregation Active",
-        date: new Date().toLocaleString()
-      };
-
-      state.demands.unshift(demand);
-
-      addActivity(
-        `SME demand received: ${quantity} ${unit} of ${product} in ${location}.`
-      );
-
-      if (transportRequired === "yes") {
-        createCargo(true, demand);
-      }
-
-      saveState();
-      render();
-
-      showMessage(
-        "smeMessage",
-        transportRequired === "yes"
-          ? "SME request submitted. CargoConnectAI and SFA/Pay4Pump support were triggered automatically."
-          : "SME request submitted for demand aggregation and supplier matching."
-      );
-    }
-
-    function createCargo(autoTriggered = false, demand = null) {
-      const product = autoTriggered ? demand.product : value("cargoProduct");
-      const quantity = autoTriggered
-        ? demand.quantity
-        : numericValue("cargoQuantity");
-      const tonnage = autoTriggered
-        ? Math.max(1, Math.ceil(demand.quantity / 20))
-        : numericValue("tonnage");
-      const origin = autoTriggered
-        ? demand.supplier || "Verified supplier location"
-        : value("origin");
-      const destination = autoTriggered
-        ? demand.location
-        : value("destination");
-      const truckType = autoTriggered
-        ? "Trailer"
-        : value("truckRequired");
-      const pickupDate = autoTriggered
-        ? demand.deliveryDate
-        : value("cargoDate");
-      const contact = autoTriggered ? "" : value("cargoContact");
-
-      if (!product || quantity <= 0 || !origin || !destination) {
-        if (!autoTriggered) {
-          showMessage(
-            "cargoMessage",
-            "Please enter the product, quantity, origin and destination.",
-            "warning"
-          );
-        }
-        return;
-      }
-
-      const cargoId = Math.floor(100000 + Math.random() * 900000);
-
-      const truckMatch = findTruckMatch(tonnage, truckType, origin, destination);
-      const driverMatch = findDriverMatch(origin, destination);
-
-      const cargo = {
-        id: cargoId,
-        product,
-        quantity,
-        tonnage,
-        origin,
-        destination,
-        truckType,
-        pickupDate,
-        contact,
-        truckMatch,
-        driverMatch,
-        status: truckMatch ? "Truck Match Suggested" : "Truck Match Pending",
-        date: new Date().toLocaleString()
-      };
-
-      state.cargos.unshift(cargo);
-
-      addActivity(
-        `CargoConnectAI load #${cargoId} created for ${product} from ${origin} to ${destination}.`
-      );
-
-      const litres = estimateFuelLitres(tonnage);
-      createFuelSupport(cargo, litres);
-
-      saveState();
-      render();
-
-      if (!autoTriggered) {
-        showMessage(
-          "cargoMessage",
-          `Cargo request #${cargoId} created. Fuel support has been suggested automatically.`
-        );
-      }
-    }
-
-    function findTruckMatch(tonnage, truckType, origin, destination) {
-      return (
-        state.trucks.find((truck) => {
-          const enoughCapacity = truck.capacity >= tonnage;
-          const typeMatches =
-            !truckType ||
-            truck.type.toLowerCase() === truckType.toLowerCase();
-          const routeText = `${truck.location} ${truck.routes}`.toLowerCase();
-          const routeRelevant =
-            routeText.includes(origin.toLowerCase()) ||
-            routeText.includes(destination.toLowerCase());
-
-          return enoughCapacity && (typeMatches || routeRelevant);
-        }) || null
-      );
-    }
-
-    function findDriverMatch(origin, destination) {
-      return (
-        state.drivers.find((driver) => {
-          const text = `${driver.location} ${driver.routes}`.toLowerCase();
-
-          return (
-            text.includes(origin.toLowerCase()) ||
-            text.includes(destination.toLowerCase())
-          );
-        }) || null
-      );
-    }
-
-    function estimateFuelLitres(tonnage) {
-      const safeTonnage = Number(tonnage) || 10;
-      return Math.max(30, Math.round(safeTonnage * 5));
-    }
-
-    function createFuelSupport(cargo, litres) {
-      const fuel = {
-        id: Date.now() + Math.floor(Math.random() * 1000),
-        cargoId: cargo.id,
-        route: `${cargo.origin} to ${cargo.destination}`,
-        type: "Diesel",
-        litres,
-        station: "AA Rano / Oando partner station",
-        plate: cargo.truckMatch?.plate || "Pending truck assignment",
-        status: "Fuel Support Suggested",
-        date: new Date().toLocaleString()
-      };
-
-      state.fuels.unshift(fuel);
-
-      addActivity(
-        `SFA/Pay4Pump suggested ${litres} litres of Diesel for Cargo #${cargo.id}.`
-      );
-    }
-
-    function bookFuelManually() {
-      const type = value("fuelType");
-      const litres = numericValue("fuelLitres");
-      const station = value("fuelStation");
-      const plate = value("vehiclePlate");
-
-      if (litres <= 0) {
-        showMessage(
-          "fuelMessage",
-          "Please enter a valid fuel quantity.",
-          "warning"
-        );
-        return;
-      }
-
-      state.fuels.unshift({
-        id: Date.now(),
-        cargoId: "Direct Booking",
-        route: "Direct fuel booking",
-        type,
-        litres,
-        station,
-        plate: plate || "Not supplied",
-        status: "Booked",
-        date: new Date().toLocaleString()
-      });
-
-      addActivity(
-        `${litres} litres of ${type} booked at ${station} for vehicle ${plate || "not specified"}.`
-      );
-
-      saveState();
-      render();
-
-      showMessage(
-        "fuelMessage",
-        `Booking confirmed for ${litres} litres of ${type} at ${station}.`
-      );
-    }
-
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function render() {
-      renderDemands();
-      renderCargo();
-      renderTrucks();
-      renderFuel();
-      renderActivity();
-      renderManufacturer();
-      renderAdmin();
-      renderFlow();
-    }
-
-    function renderDemands() {
-      const demandList = document.getElementById("demandList");
-
-      if (!state.demands.length) {
-        demandList.innerHTML =
-          '<p class="muted">No demand submitted yet.</p>';
-        return;
-      }
-
-      demandList.innerHTML = state.demands
-        .map(
-          (demand) => `
-            <div class="list-item">
-              <h3>${escapeHtml(demand.product)}</h3>
-              <p><strong>Quantity:</strong> ${demand.quantity.toLocaleString()} ${escapeHtml(demand.unit)}</p>
-              <p><strong>Location:</strong> ${escapeHtml(demand.location)}</p>
-              <p><strong>Preferred supplier:</strong> ${escapeHtml(demand.supplier)}</p>
-              <span class="badge matched">${escapeHtml(demand.status)}</span>
-            </div>
-          `
-        )
-        .join("");
-    }
-
-    function renderCargo() {
-      const cargoList = document.getElementById("cargoList");
-
-      if (!state.cargos.length) {
-        cargoList.innerHTML =
-          '<p class="muted">No cargo requests yet.</p>';
-      } else {
-        cargoList.innerHTML = state.cargos
-          .map(
-            (cargo) => `
-              <div class="list-item">
-                <h3>Cargo #${cargo.id}</h3>
-                <p><strong>Product:</strong> ${escapeHtml(cargo.product)}</p>
-                <p><strong>Route:</strong> ${escapeHtml(cargo.origin)} → ${escapeHtml(cargo.destination)}</p>
-                <p><strong>Tonnage:</strong> ${cargo.tonnage || "Not specified"} tons</p>
-                <p><strong>Truck:</strong> ${
-                  cargo.truckMatch
-                    ? escapeHtml(
-                        `${cargo.truckMatch.owner} — ${cargo.truckMatch.plate}`
-                      )
-                    : "Matching in progress"
-                }</p>
-                <p><strong>Driver:</strong> ${
-                  cargo.driverMatch
-                    ? escapeHtml(cargo.driverMatch.name)
-                    : "Matching in progress"
-                }</p>
-                <span class="badge ${
-                  cargo.truckMatch ? "matched" : "pending"
-                }">${escapeHtml(cargo.status)}</span>
-              </div>
-            `
-          )
-          .join("");
-      }
-
-      const adminCargoList = document.getElementById("adminCargoList");
-
-      if (adminCargoList) {
-        adminCargoList.innerHTML = state.cargos.length
-          ? cargoList.innerHTML
-          : '<p class="muted">No cargo operations yet.</p>';
-      }
-    }
-
-    function renderTrucks() {
-      const truckList = document.getElementById("truckList");
-
-      if (!state.trucks.length) {
-        truckList.innerHTML =
-          '<p class="muted">No registered trucks yet.</p>';
-        return;
-      }
-
-      truckList.innerHTML = state.trucks
-        .map(
-          (truck) => `
-            <div class="list-item">
-              <h3>${escapeHtml(truck.owner)} — ${escapeHtml(truck.plate)}</h3>
-              <p>${escapeHtml(truck.type)} • ${truck.capacity} tons</p>
-              <p><strong>Location:</strong> ${escapeHtml(truck.location)}</p>
-              <p><strong>Routes:</strong> ${escapeHtml(truck.routes || "Not specified")}</p>
-              <span class="badge pending">${escapeHtml(truck.status)}</span>
-            </div>
-          `
-        )
-        .join("");
-    }
-
-    function renderFuel() {
-      const fuelList = document.getElementById("fuelList");
-
-      if (!state.fuels.length) {
-        fuelList.innerHTML =
-          '<p class="muted">No fuel support request yet.</p>';
-        return;
-      }
-
-      fuelList.innerHTML = state.fuels
-        .map(
-          (fuel) => `
-            <div class="list-item">
-              <h3>Fuel Request for Cargo #${escapeHtml(fuel.cargoId)}</h3>
-              <p><strong>Route:</strong> ${escapeHtml(fuel.route)}</p>
-              <p><strong>Fuel Needed:</strong> ${fuel.litres.toLocaleString()} litres of ${escapeHtml(fuel.type)}</p>
-              <p><strong>Station:</strong> ${escapeHtml(fuel.station)}</p>
-              <p><strong>Vehicle:</strong> ${escapeHtml(fuel.plate)}</p>
-              <span class="badge verified">${escapeHtml(fuel.status)}</span>
-            </div>
-          `
-        )
-        .join("");
-    }
-
-    function renderActivity() {
-      const activityList = document.getElementById("activityList");
-
-      if (!state.activity.length) {
-        activityList.innerHTML =
-          '<p class="muted">No ecosystem activity yet.</p>';
-        return;
-      }
-
-      activityList.innerHTML = state.activity
-        .map(
-          (activity) => `
-            <div class="list-item">
-              <p><strong>${escapeHtml(activity.message)}</strong></p>
-              <p class="muted">${escapeHtml(activity.date)}</p>
-            </div>
-          `
-        )
-        .join("");
-    }
-
-    function renderManufacturer() {
-      const totalDemand = state.demands.reduce(
-        (sum, demand) => sum + Number(demand.quantity || 0),
-        0
-      );
-
-      document.getElementById("manufacturerDemand").textContent =
-        totalDemand.toLocaleString();
-
-      document.getElementById("clusterCount").textContent =
-        new Set(state.demands.map((demand) => demand.location)).size;
-
-      document.getElementById("manufacturerCargo").textContent =
-        state.cargos.length;
-
-      const list = document.getElementById("manufacturerDemandList");
-
-      if (!state.demands.length) {
-        list.innerHTML =
-          '<p class="muted">No market demand data yet.</p>';
-        return;
-      }
-
-      const grouped = {};
-
-      state.demands.forEach((demand) => {
-        const key = `${demand.product}|||${demand.location}`;
-
-        if (!grouped[key]) {
-          grouped[key] = {
-            product: demand.product,
-            location: demand.location,
-            quantity: 0,
-            unit: demand.unit
-          };
-        }
-
-        grouped[key].quantity += Number(demand.quantity || 0);
-      });
-
-      list.innerHTML = Object.values(grouped)
-        .map(
-          (item) => `
-            <div class="list-item">
-              <h3>${escapeHtml(item.product)}</h3>
-              <p><strong>Demand:</strong> ${item.quantity.toLocaleString()} ${escapeHtml(item.unit)}</p>
-              <p><strong>Location:</strong> ${escapeHtml(item.location)}</p>
-              <span class="badge matched">Demand cluster active</span>
-            </div>
-          `
-        )
-        .join("");
-    }
-
-    function renderAdmin() {
-      document.getElementById("adminPartners").textContent =
-        state.partners.length;
-
-      document.getElementById("adminRequests").textContent =
-        state.demands.length;
-
-      document.getElementById("adminCargo").textContent =
-        state.cargos.length;
-
-      document.getElementById("adminTrucks").textContent =
-        state.trucks.length;
-
-      document.getElementById("adminDrivers").textContent =
-        state.drivers.length;
-
-      document.getElementById("adminFuel").textContent =
-        state.fuels.length;
-
-      const partnerAdminList = document.getElementById("partnerAdminList");
-
-      const allPartners = [
-        ...state.partners.map((partner) => ({
-          name: partner.name,
-          category: partner.category,
-          location: partner.location,
-          status: partner.status
-        })),
-        ...state.trucks.map((truck) => ({
-          name: `${truck.owner} — ${truck.plate}`,
-          category: "Truck Owner",
-          location: truck.location,
-          status: truck.status
-        })),
-        ...state.drivers.map((driver) => ({
-          name: driver.name,
-          category: "Driver",
-          location: driver.location,
-          status: driver.status
-        }))
-      ];
-
-      partnerAdminList.innerHTML = allPartners.length
-        ? allPartners
-            .map(
-              (partner) => `
-                <div class="list-item">
-                  <h3>${escapeHtml(partner.name)}</h3>
-                  <p><strong>Category:</strong> ${escapeHtml(partner.category)}</p>
-                  <p><strong>Location:</strong> ${escapeHtml(partner.location)}</p>
-                  <span class="badge pending">${escapeHtml(partner.status)}</span>
-                </div>
-              `
-            )
-            .join("")
-        : '<p class="muted">No partners registered yet.</p>';
-
-      const demandValue = state.demands.reduce(
-        (sum, demand) =>
-          sum + Number(demand.quantity || 0) * estimatedUnitPrice(demand.product),
-        0
-      );
-
-      const logisticsValue = state.cargos.reduce(
-        (sum, cargo) => sum + Math.max(50000, Number(cargo.tonnage || 1) * 18000),
-        0
-      );
-
-      const fuelValue = state.fuels.reduce(
-        (sum, fuel) => sum + Number(fuel.litres || 0) * 1200,
-        0
-      );
-
-      const platformRevenue =
-        demandValue * 0.01 + logisticsValue * 0.05 + fuelValue * 0.01;
-
-      document.getElementById("transactionValue").textContent =
-        formatMoney(demandValue);
-
-      document.getElementById("logisticsValue").textContent =
-        formatMoney(logisticsValue);
-
-      document.getElementById("fuelValue").textContent =
-        formatMoney(fuelValue);
-
-      document.getElementById("platformRevenue").textContent =
-        formatMoney(platformRevenue);
-
-      const totalDemand = state.demands.reduce(
-        (sum, demand) => sum + Number(demand.quantity || 0),
-        0
-      );
-
-      const totalFuel = state.fuels.reduce(
-        (sum, fuel) => sum + Number(fuel.litres || 0),
-        0
-      );
-
-      document.getElementById("impactDemand").textContent =
-        totalDemand.toLocaleString();
-
-      document.getElementById("impactFuel").textContent =
-        totalFuel.toLocaleString();
-
-      document.getElementById("impactPartners").textContent =
-        (
-          state.partners.length +
-          state.trucks.length +
-          state.drivers.length
-        ).toLocaleString();
-    }
-
-    function estimatedUnitPrice(product) {
-      const text = String(product || "").toLowerCase();
-
-      if (text.includes("cement")) return 11000;
-      if (text.includes("flour")) return 65000;
-      if (text.includes("fertilizer")) return 45000;
-      if (text.includes("rice")) return 85000;
-      if (text.includes("sugar")) return 70000;
-
-      return 10000;
-    }
-
-    function renderFlow() {
-      updateFlowStep("flowSME", state.demands.length > 0);
-      updateFlowStep("flowCargo", state.cargos.length > 0);
-      updateFlowStep(
-        "flowTruck",
-        state.cargos.some((cargo) => cargo.truckMatch) ||
-          state.trucks.length > 0
-      );
-      updateFlowStep("flowFuel", state.fuels.length > 0);
-      updateFlowStep(
-        "flowDelivery",
-        state.cargos.some((cargo) => cargo.status === "Completed")
-      );
-    }
-
-    function updateFlowStep(id, complete) {
-      const element = document.getElementById(id);
-
-      element.classList.toggle("complete", complete);
-      element.classList.toggle("pending-step", !complete);
-
-      const cleanText = element.textContent
-        .replace(/^✅\s*/, "")
-        .replace(/^⏳\s*/, "");
-
-      element.textContent = `${complete ? "✅" : "⏳"} ${cleanText}`;
-    }
-
-    function resetDemoData() {
-      const confirmed = window.confirm(
-        "This will remove all demo requests, trucks, drivers and activity. Continue?"
-      );
-
-      if (!confirmed) return;
-
-      localStorage.removeItem(STORAGE_KEY);
-
-      state = {
-        partners: [],
-        trucks: [],
-        drivers: [],
-        demands: [],
-        cargos: [],
-        fuels: [],
-        activity: []
-      };
-
-      render();
-      alert("Demo data has been reset.");
-    }
-
-    loadState();
-    render();
-  </script>
+async function registerTruck(){
+  const payload={
+    ownerName:value("truckOwner"), plateNumber:value("plate").toUpperCase(), make:value("truckMake"), model:value("truckModel"),
+    truckType:value("truckType"), capacityTonnes:numberValue("capacity"), fuelType:value("truckFuelType"),
+    currentLocation:value("truckLocation"), baseLocation:value("truckBaseLocation"), preferredRoutes:value("truckRoutes"),
+    availabilityStatus:value("truckAvailability"), nextAvailableDate:value("truckNextAvailableDate"),
+    insuranceStatus:value("truckInsuranceStatus"), roadworthinessStatus:value("truckRoadworthinessStatus"),
+    driverAssignment:value("truckDriverAssigned"), driverName:value("truckDriverName"), driverPhone:value("truckDriverPhone"),
+    gpsTrackerStatus:value("truckGpsInstalled"), cargoTypes:selectedCargoTypes(), specialNotes:value("truckSpecialNotes"),
+    verificationConsent:$("truckVerificationConsent").checked
+  };
+  if(!payload.ownerName||!payload.plateNumber||!payload.make||!payload.truckType||payload.capacityTonnes<=0||!payload.fuelType||!payload.currentLocation||!payload.preferredRoutes||!payload.availabilityStatus||!payload.insuranceStatus||!payload.roadworthinessStatus||!payload.driverAssignment||!payload.verificationConsent){
+    showMessage("truckMessage","Please complete all required truck, location, compliance and consent fields.","warning"); return;
+  }
+  $("registerTruckBtn").disabled=true;
+  showMessage("truckMessage","Submitting truck registration to SureWay cloud...","success");
+  let cloudSaved=false;
+  try{ await postApi("/api/trucks",payload); cloudSaved=true; }catch(error){ console.warn("Truck cloud save failed; stored locally.",error); }
+  state.trucks.unshift({...payload,id:Date.now(),owner:payload.ownerName,plate:payload.plateNumber,type:payload.truckType,capacity:payload.capacityTonnes,location:payload.currentLocation,routes:payload.preferredRoutes,status:cloudSaved?"Pending Verification":"Saved Locally — Sync Pending"});
+  addActivity(`${payload.ownerName} registered a ${payload.capacityTonnes}-ton ${payload.truckType} with plate ${payload.plateNumber}.`);
+  saveState();render();
+  showMessage("truckMessage",cloudSaved?"Truck registration submitted successfully and saved to MongoDB.":"Truck registration saved locally. Cloud sync is pending.","success");
+  $("registerTruckBtn").disabled=false;
+}
+
+async function registerDriver(){
+  const payload={fullName:value("driverName"),phone:value("driverPhone"),licenseNumber:value("license"),experienceYears:numberValue("experience"),vehicleClass:value("vehicleClass"),currentLocation:value("driverLocation"),preferredRoutes:value("driverRoute")};
+  if(!payload.fullName||!payload.phone||!payload.licenseNumber||!payload.currentLocation){ showMessage("driverMessage","Please enter the driver's name, phone number, licence number and current location.","warning"); return; }
+  $("registerDriverBtn").disabled=true;
+  showMessage("driverMessage","Submitting driver registration to SureWay cloud...","success");
+  let cloudSaved=false;
+  try{ await postApi("/api/drivers",payload); cloudSaved=true; }catch(error){ console.warn("Driver cloud save failed; stored locally.",error); }
+  state.drivers.unshift({id:Date.now(),name:payload.fullName,phone:payload.phone,license:payload.licenseNumber,experience:payload.experienceYears,vehicleClass:payload.vehicleClass,location:payload.currentLocation,routes:payload.preferredRoutes,status:cloudSaved?"Pending Verification":"Saved Locally — Sync Pending"});
+  addActivity(`Driver ${payload.fullName} registered from ${payload.currentLocation}.`);
+  saveState();render();
+  showMessage("driverMessage",cloudSaved?"Driver registration submitted successfully and saved to MongoDB.":"Driver registration saved locally. Cloud sync is pending.","success");
+  $("registerDriverBtn").disabled=false;
+}
+
+function submitSMERequest(){
+  const demand={id:Date.now(),product:value("product"),quantity:numberValue("quantity"),unit:value("unit"),location:value("smeLocation"),supplier:value("supplier")||"Any verified supplier",transportRequired:value("needTransport"),deliveryDate:value("deliveryDate"),buyerNote:value("buyerNote"),status:"Aggregation Active",date:new Date().toLocaleString()};
+  if(!demand.product||demand.quantity<=0||!demand.location){ showMessage("smeMessage","Please enter the product, quantity and buyer location.","warning"); return; }
+  state.demands.unshift(demand); addActivity(`SME demand received: ${demand.quantity} ${demand.unit} of ${demand.product} in ${demand.location}.`);
+  if(demand.transportRequired==="yes") createCargo(true,demand);
+  saveState();render();
+  showMessage("smeMessage",demand.transportRequired==="yes"?"SME request submitted. CargoConnectAI and SFA/Pay4Pump support were triggered automatically.":"SME request submitted for demand aggregation and supplier matching.","success");
+}
+
+function findTruckMatch(tonnage,truckType,origin,destination){
+  return state.trucks.find(t=>{
+    const enough=Number(t.capacity||t.capacityTonnes||0)>=tonnage;
+    const typeOk=!truckType || String(t.type||t.truckType||"").toLowerCase().includes(truckType.toLowerCase()) || truckType.toLowerCase().includes(String(t.type||t.truckType||"").toLowerCase());
+    const route=`${t.location||t.currentLocation||""} ${t.routes||t.preferredRoutes||""}`.toLowerCase();
+    return enough && (typeOk || route.includes(origin.toLowerCase()) || route.includes(destination.toLowerCase()));
+  })||null;
+}
+function findDriverMatch(origin,destination){
+  return state.drivers.find(d=>`${d.location||""} ${d.routes||""}`.toLowerCase().includes(origin.toLowerCase())||`${d.location||""} ${d.routes||""}`.toLowerCase().includes(destination.toLowerCase()))||null;
+}
+function estimateFuelLitres(tonnage){ return Math.max(30,Math.round((Number(tonnage)||10)*5)); }
+
+function createCargo(autoTriggered=false,demand=null){
+  const product=autoTriggered?demand.product:value("cargoProduct");
+  const quantity=autoTriggered?demand.quantity:numberValue("cargoQuantity");
+  const tonnage=autoTriggered?Math.max(1,Math.ceil(demand.quantity/20)):numberValue("tonnage");
+  const origin=autoTriggered?(demand.supplier||"Verified supplier location"):value("origin");
+  const destination=autoTriggered?demand.location:value("destination");
+  const truckType=autoTriggered?"Trailer":value("truckRequired");
+  if(!product||tonnage<=0||!origin||!destination){ if(!autoTriggered) showMessage("cargoMessage","Please enter product, tonnage, origin and destination.","warning"); return; }
+  const cargoId=Math.floor(100000+Math.random()*900000);
+  const truckMatch=findTruckMatch(tonnage,truckType,origin,destination);
+  const driverMatch=findDriverMatch(origin,destination);
+  const cargo={id:cargoId,product,quantity,tonnage,origin,destination,truckType,pickupDate:autoTriggered?demand.deliveryDate:value("cargoDate"),contact:autoTriggered?"":value("cargoContact"),truckMatch,driverMatch,status:truckMatch?"Truck Match Suggested":"Truck Match Pending",date:new Date().toLocaleString()};
+  state.cargos.unshift(cargo); addActivity(`CargoConnectAI load #${cargoId} created for ${product} from ${origin} to ${destination}.`);
+  createFuelSupport(cargo,estimateFuelLitres(tonnage));
+  saveState();render();
+  if(!autoTriggered) showMessage("cargoMessage",`Cargo request #${cargoId} created. Fuel support was suggested automatically.`,"success");
+}
+function createFuelSupport(cargo,litres){
+  const fuel={id:Date.now()+Math.floor(Math.random()*1000),cargoId:cargo.id,route:`${cargo.origin} to ${cargo.destination}`,type:"Diesel",litres,station:"AA Rano / Oando partner station",plate:cargo.truckMatch?.plate||cargo.truckMatch?.plateNumber||"Pending truck assignment",status:"Fuel Support Suggested",date:new Date().toLocaleString()};
+  state.fuels.unshift(fuel); addActivity(`SFA/Pay4Pump suggested ${litres} litres of Diesel for Cargo #${cargo.id}.`);
+}
+function bookFuel(){
+  const litres=numberValue("fuelLitres"),type=value("fuelType"),station=value("fuelStation"),plate=value("vehiclePlate");
+  if(litres<=0){ showMessage("fuelMessage","Please enter a valid fuel quantity.","warning"); return; }
+  state.fuels.unshift({id:Date.now(),cargoId:"Direct Booking",route:"Direct fuel booking",type,litres,station,plate:plate||"Not supplied",status:"Booked",date:new Date().toLocaleString()});
+  addActivity(`${litres} litres of ${type} booked at ${station} for vehicle ${plate||"not specified"}.`);
+  saveState();render();showMessage("fuelMessage",`Booking confirmed for ${litres} litres of ${type} at ${station}.`,"success");
+}
+
+function renderDemands(){
+  $("demandList").innerHTML=state.demands.length?state.demands.map(d=>`<div class="list-item"><h3>${esc(d.product)}</h3><p><b>Quantity:</b> ${Number(d.quantity).toLocaleString()} ${esc(d.unit)}</p><p><b>Location:</b> ${esc(d.location)}</p><p><b>Preferred supplier:</b> ${esc(d.supplier)}</p><span class="badge matched">${esc(d.status)}</span></div>`).join(""):'<p class="muted">No demand submitted yet.</p>';
+}
+function renderCargo(){
+  $("cargoList").innerHTML=state.cargos.length?state.cargos.map(c=>`<div class="list-item"><h3>Cargo #${esc(c.id)}</h3><p><b>Product:</b> ${esc(c.product)}</p><p><b>Route:</b> ${esc(c.origin)} → ${esc(c.destination)}</p><p><b>Tonnage:</b> ${esc(c.tonnage)} tons</p><p><b>Truck:</b> ${c.truckMatch?esc((c.truckMatch.owner||c.truckMatch.ownerName)+" — "+(c.truckMatch.plate||c.truckMatch.plateNumber)):"Matching in progress"}</p><p><b>Driver:</b> ${c.driverMatch?esc(c.driverMatch.name):"Matching in progress"}</p><span class="badge ${c.truckMatch?"matched":"pending"}">${esc(c.status)}</span></div>`).join(""):'<p class="muted">No cargo requests yet.</p>';
+  $("adminCargoList").innerHTML=state.cargos.length?$("cargoList").innerHTML:'<p class="muted">No cargo operations yet.</p>';
+}
+function renderTrucks(){
+  $("truckList").innerHTML=state.trucks.length?state.trucks.map(t=>`<div class="list-item"><h3>${esc(t.owner||t.ownerName)} — ${esc(t.plate||t.plateNumber)}</h3><p>${esc(t.type||t.truckType)} • ${esc(t.capacity||t.capacityTonnes)} tons</p><p><b>Location:</b> ${esc(t.location||t.currentLocation)}</p><p><b>Routes:</b> ${esc(t.routes||t.preferredRoutes||"Not specified")}</p><span class="badge pending">${esc(t.status)}</span></div>`).join(""):'<p class="muted">No registered trucks yet.</p>';
+}
+function renderFuel(){
+  $("fuelList").innerHTML=state.fuels.length?state.fuels.map(f=>`<div class="list-item"><h3>Fuel Request ${esc(f.cargoId)}</h3><p><b>Route:</b> ${esc(f.route)}</p><p><b>Fuel:</b> ${Number(f.litres).toLocaleString()} litres of ${esc(f.type)}</p><p><b>Station:</b> ${esc(f.station)}</p><p><b>Vehicle:</b> ${esc(f.plate)}</p><span class="badge verified">${esc(f.status)}</span></div>`).join(""):'<p class="muted">No fuel support request yet.</p>';
+}
+function renderManufacturer(){
+  const total=state.demands.reduce((s,d)=>s+Number(d.quantity||0),0);
+  $("manufacturerDemand").textContent=total.toLocaleString();
+  $("clusterCount").textContent=new Set(state.demands.map(d=>d.location)).size;
+  $("manufacturerCargo").textContent=state.cargos.length;
+  const grouped={};
+  state.demands.forEach(d=>{const key=`${d.product}|||${d.location}`;grouped[key]??={product:d.product,location:d.location,quantity:0,unit:d.unit};grouped[key].quantity+=Number(d.quantity||0);});
+  $("manufacturerDemandList").innerHTML=Object.values(grouped).length?Object.values(grouped).map(x=>`<div class="list-item"><h3>${esc(x.product)}</h3><p><b>Demand:</b> ${x.quantity.toLocaleString()} ${esc(x.unit)}</p><p><b>Location:</b> ${esc(x.location)}</p><span class="badge matched">Demand cluster active</span></div>`).join(""):'<p class="muted">No market demand data yet.</p>';
+}
+function renderAdmin(){
+  $("adminPartners").textContent=state.partners.length;$("adminRequests").textContent=state.demands.length;$("adminCargo").textContent=state.cargos.length;$("adminTrucks").textContent=state.trucks.length;$("adminDrivers").textContent=state.drivers.length;$("adminFuel").textContent=state.fuels.length;
+  const all=[...state.partners.map(p=>({name:p.name,category:p.category,location:p.location,status:p.status})),...state.trucks.map(t=>({name:`${t.owner||t.ownerName} — ${t.plate||t.plateNumber}`,category:"Truck Owner",location:t.location||t.currentLocation,status:t.status})),...state.drivers.map(d=>({name:d.name,category:"Driver",location:d.location,status:d.status}))];
+  $("partnerAdminList").innerHTML=all.length?all.map(p=>`<div class="list-item"><h3>${esc(p.name)}</h3><p><b>Category:</b> ${esc(p.category)}</p><p><b>Location:</b> ${esc(p.location)}</p><span class="badge pending">${esc(p.status)}</span></div>`).join(""):'<p class="muted">No partners registered yet.</p>';
+  const demandValue=state.demands.reduce((s,d)=>s+Number(d.quantity||0)*unitPrice(d.product),0);
+  const logisticsValue=state.cargos.reduce((s,c)=>s+Math.max(50000,Number(c.tonnage||1)*18000),0);
+  const fuelValue=state.fuels.reduce((s,f)=>s+Number(f.litres||0)*1200,0);
+  $("transactionValue").textContent=money(demandValue);$("logisticsValue").textContent=money(logisticsValue);$("fuelValue").textContent=money(fuelValue);$("platformRevenue").textContent=money(demandValue*.01+logisticsValue*.05+fuelValue*.01);
+}
+function unitPrice(product){const x=String(product||"").toLowerCase();if(x.includes("cement"))return 11000;if(x.includes("flour"))return 65000;if(x.includes("fertilizer"))return 45000;if(x.includes("rice"))return 85000;if(x.includes("sugar"))return 70000;return 10000;}
+function renderInsights(){
+  $("flowSME").classList.toggle("complete",state.demands.length>0);
+  $("flowCargo").classList.toggle("complete",state.cargos.length>0);
+  $("flowTruck").classList.toggle("complete",state.cargos.some(c=>c.truckMatch)||state.trucks.length>0);
+  $("flowFuel").classList.toggle("complete",state.fuels.length>0);
+  $("flowDelivery").classList.toggle("complete",state.cargos.some(c=>c.status==="Completed"));
+  $("activityList").innerHTML=state.activity.length?state.activity.map(a=>`<div class="list-item"><strong>${esc(a.message)}</strong><p class="muted">${esc(a.date)}</p></div>`).join(""):'<p class="muted">No ecosystem activity yet.</p>';
+  $("impactDemand").textContent=state.demands.reduce((s,d)=>s+Number(d.quantity||0),0).toLocaleString();
+  $("impactFuel").textContent=state.fuels.reduce((s,f)=>s+Number(f.litres||0),0).toLocaleString();
+  $("impactPartners").textContent=(state.partners.length+state.trucks.length+state.drivers.length).toLocaleString();
+}
+function render(){renderDemands();renderCargo();renderTrucks();renderFuel();renderManufacturer();renderAdmin();renderInsights();}
+
+$("savePartnerBtn").addEventListener("click",savePartner);
+$("registerTruckBtn").addEventListener("click",registerTruck);
+$("registerDriverBtn").addEventListener("click",registerDriver);
+$("submitSmeBtn").addEventListener("click",submitSMERequest);
+$("postCargoBtn").addEventListener("click",()=>createCargo(false,null));
+$("bookFuelBtn").addEventListener("click",bookFuel);
+$("resetBtn").addEventListener("click",()=>{if(confirm("Remove all locally saved demo data?")){localStorage.removeItem(STORAGE_KEY);state=emptyState();render();alert("Local demo data has been reset.");}});
+
+loadState();
+render();
+</script>
 </body>
 </html>
