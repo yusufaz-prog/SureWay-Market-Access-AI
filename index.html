@@ -1632,47 +1632,94 @@ async function registerTruck() {
   }
 }
     function registerDriver() {
-      const name = value("driverName");
-      const phone = value("driverPhone");
-      const license = value("license");
-      const experience = numericValue("experience");
-      const vehicleClass = value("vehicleClass");
-      const location = value("driverLocation");
-      const routes = value("driverRoute");
+      async function registerDriver() {
+  const name = value("driverName");
+  const phone = value("driverPhone");
+  const licenseNumber = value("license");
+  const experienceYears = numericValue("experience");
+  const vehicleClass = value("vehicleClass");
+  const currentLocation = value("driverLocation");
+  const preferredRoutes = value("driverRoute");
 
-      if (!name || !phone || !license || !location) {
-        showMessage(
-          "driverMessage",
-          "Please enter the driver's name, phone number, licence number and location.",
-          "warning"
-        );
-        return;
+  if (!name || !phone || !licenseNumber || !currentLocation) {
+    showMessage(
+      "driverMessage",
+      "Please enter the driver's name, phone number, licence number and current location.",
+      "warning"
+    );
+    return;
+  }
+
+  showMessage(
+    "driverMessage",
+    "Submitting driver registration to SureWay cloud...",
+    "success"
+  );
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/drivers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          licenseNumber,
+          experienceYears,
+          vehicleClass,
+          currentLocation,
+          preferredRoutes
+        })
       }
+    );
 
-      state.drivers.push({
-        id: Date.now(),
-        name,
-        phone,
-        license,
-        experience,
-        vehicleClass,
-        location,
-        routes,
-        status: "Pending Verification"
-      });
+    const result = await response.json();
 
-      addActivity(
-        `Driver ${name} registered with licence ${license} from ${location}.`
-      );
-
-      saveState();
-      render();
-
-      showMessage(
-        "driverMessage",
-        "Driver registration submitted. Verification is pending."
+    if (!response.ok) {
+      throw new Error(
+        result.message ||
+          "Driver registration could not be completed."
       );
     }
+
+    state.drivers.push({
+      id: result.driverId || Date.now(),
+      name,
+      phone,
+      license: licenseNumber.toUpperCase(),
+      experience: experienceYears,
+      vehicleClass,
+      location: currentLocation,
+      routes: preferredRoutes,
+      status: "Pending Verification"
+    });
+
+    addActivity(
+      `Driver ${name} registered with licence ${licenseNumber.toUpperCase()} from ${currentLocation}.`
+    );
+
+    saveState();
+    render();
+
+    showMessage(
+      "driverMessage",
+      "Driver registered successfully, saved to MongoDB and submitted for verification.",
+      "success"
+    );
+  } catch (error) {
+    console.error("Driver registration error:", error);
+
+    showMessage(
+      "driverMessage",
+      error.message ||
+        "Unable to connect to the SureWay server. Please try again.",
+      "warning"
+    );
+  }
+}
 
     function submitSMERequest() {
       const product = value("product");
