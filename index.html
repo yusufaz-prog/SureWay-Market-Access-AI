@@ -107,7 +107,12 @@
   <div class="card">
     <h2>Truck Owner Registration</h2>
     <div class="grid">
+      <div><label>Owner Type *</label><select id="truckOwnerType"><option value="">Select owner type</option><option>Individual</option><option>Company</option><option>Cooperative</option></select></div>
       <div><label>Owner / Company Name *</label><input id="truckOwner" /></div>
+      <div><label>Owner Phone Number *</label><input id="truckOwnerPhone" type="tel" placeholder="+234..." /></div>
+      <div><label>Email</label><input id="truckEmail" type="email" /></div>
+      <div><label>Company Name</label><input id="truckCompanyName" /></div>
+      <div><label>CAC Number</label><input id="truckCacNumber" /></div>
       <div><label>Registered Plate Number *</label><input id="plate" placeholder="LAG-123-XX" /></div>
       <div><label>Truck Make *</label><input id="truckMake" placeholder="HOWO, MAN, DAF or Volvo" /></div>
       <div><label>Truck Model</label><input id="truckModel" /></div>
@@ -132,6 +137,8 @@
       <div><label>Insurance Status *</label><select id="truckInsuranceStatus">
         <option value="">Select insurance status</option><option>Valid</option><option>Expired</option><option>Pending Renewal</option><option>Not Available</option>
       </select></div>
+      <div><label>Insurance Expiry Date</label><input id="truckInsuranceExpiryDate" type="date" /></div>
+      <div><label>Roadworthiness Expiry Date</label><input id="truckRoadworthinessExpiryDate" type="date" /></div>
       <div><label>Roadworthiness Status *</label><select id="truckRoadworthinessStatus">
         <option value="">Select roadworthiness status</option><option>Valid</option><option>Expired</option><option>Pending Renewal</option><option>Not Available</option>
       </select></div>
@@ -169,6 +176,7 @@
       <div><label>Driver Full Name *</label><input id="driverName" /></div>
       <div><label>Phone Number *</label><input id="driverPhone" type="tel" /></div>
       <div><label>Valid Driver's Licence Number *</label><input id="license" /></div>
+      <div><label>Upload Driver's Licence (JPG, PNG, WEBP or PDF, max 2 MB)</label><input id="licenseUpload" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" /></div>
       <div><label>Years of Experience</label><input id="experience" type="number" min="0" /></div>
       <div><label>Vehicle Category Allowed</label><input id="vehicleClass" placeholder="Class E" /></div>
       <div><label>Current Location *</label><input id="driverLocation" /></div>
@@ -323,6 +331,19 @@ function showMessage(id,text,type="success"){ const box=$(id); if(box) box.inner
 function addActivity(message){ state.activity.unshift({message,date:new Date().toLocaleString()}); state.activity=state.activity.slice(0,50); }
 function selectedCargoTypes(){ return [...document.querySelectorAll('#cargoChecks input:checked')].map(x=>x.value); }
 
+function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    if(!file){ resolve(null); return; }
+    if(file.size>2*1024*1024){ reject(new Error("The selected file is larger than 2 MB.")); return; }
+    const allowed=["image/jpeg","image/png","image/webp","application/pdf"];
+    if(!allowed.includes(file.type)){ reject(new Error("Please choose a JPG, PNG, WEBP or PDF file.")); return; }
+    const reader=new FileReader();
+    reader.onload=()=>resolve({name:file.name,type:file.type,size:file.size,dataUrl:reader.result});
+    reader.onerror=()=>reject(new Error("The licence document could not be read."));
+    reader.readAsDataURL(file);
+  });
+}
+
 async function postApi(endpoint,payload){
   const controller=new AbortController();
   const timeout = setTimeout(() => controller.abort(), 120000);
@@ -367,50 +388,84 @@ async function savePartner(){
 
 async function registerTruck(){
   const payload={
-    ownerName:value("truckOwner"), plateNumber:value("plate").toUpperCase(), make:value("truckMake"), model:value("truckModel"),
-    truckType:value("truckType"), capacityTonnes:numberValue("capacity"), fuelType:value("truckFuelType"),
-    currentLocation:value("truckLocation"), baseLocation:value("truckBaseLocation"), preferredRoutes:value("truckRoutes"),
-    availabilityStatus:value("truckAvailability"), nextAvailableDate:value("truckNextAvailableDate"),
-    insuranceStatus:value("truckInsuranceStatus"), roadworthinessStatus:value("truckRoadworthinessStatus"),
-    driverAssignment:value("truckDriverAssigned"), driverName:value("truckDriverName"), driverPhone:value("truckDriverPhone"),
-    gpsTrackerStatus:value("truckGpsInstalled"), cargoTypes:selectedCargoTypes(), specialNotes:value("truckSpecialNotes"),
+    ownerType:value("truckOwnerType"),
+    ownerName:value("truckOwner"),
+    ownerPhone:value("truckOwnerPhone"),
+    email:value("truckEmail"),
+    companyName:value("truckCompanyName"),
+    cacNumber:value("truckCacNumber"),
+    plateNumber:value("plate").toUpperCase(),
+    truckMake:value("truckMake"),
+    truckModel:value("truckModel"),
+    truckType:value("truckType"),
+    capacityTonnes:numberValue("capacity"),
+    fuelType:value("truckFuelType"),
+    currentLocation:value("truckLocation"),
+    baseLocation:value("truckBaseLocation"),
+    preferredRoutes:value("truckRoutes"),
+    cargoTypes:selectedCargoTypes(),
+    availabilityStatus:value("truckAvailability"),
+    insuranceStatus:value("truckInsuranceStatus"),
+    roadworthinessStatus:value("truckRoadworthinessStatus"),
+    insuranceExpiryDate:value("truckInsuranceExpiryDate"),
+    roadworthinessExpiryDate:value("truckRoadworthinessExpiryDate"),
+    driverAssigned:value("truckDriverAssigned"),
+    driverName:value("truckDriverName"),
+    driverPhone:value("truckDriverPhone"),
+    gpsInstalled:value("truckGpsInstalled"),
+    nextAvailableDate:value("truckNextAvailableDate"),
+    specialNotes:value("truckSpecialNotes"),
     verificationConsent:$("truckVerificationConsent").checked
   };
-  if(!payload.ownerName||!payload.plateNumber||!payload.make||!payload.truckType||payload.capacityTonnes<=0||!payload.fuelType||!payload.currentLocation||!payload.preferredRoutes||!payload.availabilityStatus||!payload.insuranceStatus||!payload.roadworthinessStatus||!payload.driverAssignment||!payload.verificationConsent){
-    showMessage("truckMessage","Please complete all required truck, location, compliance and consent fields.","warning"); return;
+  if(!payload.ownerType||!payload.ownerName||!payload.ownerPhone||!payload.plateNumber||!payload.truckMake||!payload.truckType||payload.capacityTonnes<=0||!payload.fuelType||!payload.currentLocation||!payload.preferredRoutes||payload.cargoTypes.length===0||!payload.availabilityStatus||!payload.insuranceStatus||!payload.roadworthinessStatus||!payload.driverAssigned||!payload.verificationConsent){
+    showMessage("truckMessage","Please complete all required truck, owner, location, cargo, compliance and consent fields.","warning"); return;
   }
   $("registerTruckBtn").disabled=true;
   showMessage("truckMessage","Submitting truck registration to SureWay cloud...","success");
   let cloudSaved=false;
-  try{ await postApi("/api/trucks",payload); cloudSaved=true; }catch(error){ console.warn("Truck cloud save failed; stored locally.",error); }
+  try{ await postApi("/api/trucks",payload); cloudSaved=true; }
+  catch(error){ console.warn("Truck cloud save failed; stored locally.",error); showMessage("truckMessage",error.message,"error"); }
   state.trucks.unshift({...payload,id:Date.now(),owner:payload.ownerName,plate:payload.plateNumber,type:payload.truckType,capacity:payload.capacityTonnes,location:payload.currentLocation,routes:payload.preferredRoutes,status:cloudSaved?"Pending Verification":"Saved Locally — Sync Pending"});
   addActivity(`${payload.ownerName} registered a ${payload.capacityTonnes}-ton ${payload.truckType} with plate ${payload.plateNumber}.`);
   saveState();render();
-  showMessage("truckMessage",cloudSaved?"Truck registration submitted successfully and saved to MongoDB.":"Truck registration saved locally. Cloud sync is pending.","success");
+  if(cloudSaved) showMessage("truckMessage","Truck registration submitted successfully and saved to MongoDB.","success");
   $("registerTruckBtn").disabled=false;
 }
 
 async function registerDriver(){
-  const payload={fullName:value("driverName"),phone:value("driverPhone"),licenseNumber:value("license"),experienceYears:numberValue("experience"),vehicleClass:value("vehicleClass"),currentLocation:value("driverLocation"),preferredRoutes:value("driverRoute")};
-  if(!payload.fullName||!payload.phone||!payload.licenseNumber||!payload.currentLocation){ showMessage("driverMessage","Please enter the driver's name, phone number, licence number and current location.","warning"); return; }
-  $("registerDriverBtn").disabled=true;
-  showMessage("driverMessage","Submitting driver registration to SureWay cloud...","success");
-  let cloudSaved=false;
-  try{ await postApi("/api/drivers",payload); cloudSaved=true; }catch(error){ console.warn("Driver cloud save failed; stored locally.",error); }
-  state.drivers.unshift({id:Date.now(),name:payload.fullName,phone:payload.phone,license:payload.licenseNumber,experience:payload.experienceYears,vehicleClass:payload.vehicleClass,location:payload.currentLocation,routes:payload.preferredRoutes,status:cloudSaved?"Pending Verification":"Saved Locally — Sync Pending"});
-  addActivity(`Driver ${payload.fullName} registered from ${payload.currentLocation}.`);
-  saveState();render();
-  showMessage("driverMessage",cloudSaved?"Driver registration submitted successfully and saved to MongoDB.":"Driver registration saved locally. Cloud sync is pending.","success");
-  $("registerDriverBtn").disabled=false;
+  const button=$("registerDriverBtn");
+  try{
+    const file=$("licenseUpload")?.files?.[0] || null;
+    const licenseDocument=await readFileAsDataUrl(file);
+    const payload={name:value("driverName"),phone:value("driverPhone"),licenseNumber:value("license"),experienceYears:numberValue("experience"),vehicleClass:value("vehicleClass"),currentLocation:value("driverLocation"),preferredRoutes:value("driverRoute"),licenseDocument};
+    if(!payload.name||!payload.phone||!payload.licenseNumber||!payload.currentLocation){ showMessage("driverMessage","Please enter the driver's name, phone number, licence number and current location.","warning"); return; }
+    button.disabled=true;
+    showMessage("driverMessage","Submitting driver registration to SureWay cloud...","success");
+    let cloudSaved=false;
+    try{ await postApi("/api/drivers",payload); cloudSaved=true; }
+    catch(error){ console.warn("Driver cloud save failed; stored locally.",error); showMessage("driverMessage",error.message,"error"); }
+    state.drivers.unshift({id:Date.now(),name:payload.name,phone:payload.phone,license:payload.licenseNumber,experience:payload.experienceYears,vehicleClass:payload.vehicleClass,location:payload.currentLocation,routes:payload.preferredRoutes,status:cloudSaved?"Pending Verification":"Saved Locally — Sync Pending"});
+    addActivity(`Driver ${payload.name} registered from ${payload.currentLocation}.`);
+    saveState();render();
+    if(cloudSaved) showMessage("driverMessage","Driver registration submitted successfully and saved to MongoDB.","success");
+  }catch(error){ showMessage("driverMessage",error.message,"error"); }
+  finally{ button.disabled=false; }
 }
 
-function submitSMERequest(){
+async function submitSMERequest(){
   const demand={id:Date.now(),product:value("product"),quantity:numberValue("quantity"),unit:value("unit"),location:value("smeLocation"),supplier:value("supplier")||"Any verified supplier",transportRequired:value("needTransport"),deliveryDate:value("deliveryDate"),buyerNote:value("buyerNote"),status:"Aggregation Active",date:new Date().toLocaleString()};
   if(!demand.product||demand.quantity<=0||!demand.location){ showMessage("smeMessage","Please enter the product, quantity and buyer location.","warning"); return; }
+  $("submitSmeBtn").disabled=true;
+  showMessage("smeMessage","Submitting SME request to SureWay cloud...","success");
+  let cloudSaved=false;
+  try{ await postApi("/api/demands",demand); cloudSaved=true; }
+  catch(error){ console.warn("SME demand cloud save failed; stored locally.",error); }
+  demand.status=cloudSaved?"Aggregation Active":"Saved Locally — Sync Pending";
   state.demands.unshift(demand); addActivity(`SME demand received: ${demand.quantity} ${demand.unit} of ${demand.product} in ${demand.location}.`);
-  if(demand.transportRequired==="yes") createCargo(true,demand);
+  if(demand.transportRequired==="yes") await createCargo(true,demand);
   saveState();render();
-  showMessage("smeMessage",demand.transportRequired==="yes"?"SME request submitted. CargoConnectAI and SFA/Pay4Pump support were triggered automatically.":"SME request submitted for demand aggregation and supplier matching.","success");
+  showMessage("smeMessage",cloudSaved?(demand.transportRequired==="yes"?"SME request saved to MongoDB. CargoConnectAI and SFA/Pay4Pump support were triggered automatically.":"SME request saved to MongoDB for aggregation and supplier matching."):"SME request saved locally. Cloud sync is pending.",cloudSaved?"success":"warning");
+  $("submitSmeBtn").disabled=false;
 }
 
 function findTruckMatch(tonnage,truckType,origin,destination){
@@ -426,7 +481,7 @@ function findDriverMatch(origin,destination){
 }
 function estimateFuelLitres(tonnage){ return Math.max(30,Math.round((Number(tonnage)||10)*5)); }
 
-function createCargo(autoTriggered=false,demand=null){
+async function createCargo(autoTriggered=false,demand=null){
   const product=autoTriggered?demand.product:value("cargoProduct");
   const quantity=autoTriggered?demand.quantity:numberValue("cargoQuantity");
   const tonnage=autoTriggered?Math.max(1,Math.ceil(demand.quantity/20)):numberValue("tonnage");
@@ -438,21 +493,32 @@ function createCargo(autoTriggered=false,demand=null){
   const truckMatch=findTruckMatch(tonnage,truckType,origin,destination);
   const driverMatch=findDriverMatch(origin,destination);
   const cargo={id:cargoId,product,quantity,tonnage,origin,destination,truckType,pickupDate:autoTriggered?demand.deliveryDate:value("cargoDate"),contact:autoTriggered?"":value("cargoContact"),truckMatch,driverMatch,status:truckMatch?"Truck Match Suggested":"Truck Match Pending",date:new Date().toLocaleString()};
+  let cloudSaved=false;
+  try{ await postApi("/api/cargos",cargo); cloudSaved=true; }catch(error){ console.warn("Cargo cloud save failed; stored locally.",error); }
+  cargo.status=cloudSaved?(truckMatch?"Truck Match Suggested":"Truck Match Pending"):"Saved Locally — Sync Pending";
   state.cargos.unshift(cargo); addActivity(`CargoConnectAI load #${cargoId} created for ${product} from ${origin} to ${destination}.`);
-  createFuelSupport(cargo,estimateFuelLitres(tonnage));
+  await createFuelSupport(cargo,estimateFuelLitres(tonnage));
   saveState();render();
   if(!autoTriggered) showMessage("cargoMessage",`Cargo request #${cargoId} created. Fuel support was suggested automatically.`,"success");
 }
-function createFuelSupport(cargo,litres){
+async function createFuelSupport(cargo,litres){
   const fuel={id:Date.now()+Math.floor(Math.random()*1000),cargoId:cargo.id,route:`${cargo.origin} to ${cargo.destination}`,type:"Diesel",litres,station:"AA Rano / Oando partner station",plate:cargo.truckMatch?.plate||cargo.truckMatch?.plateNumber||"Pending truck assignment",status:"Fuel Support Suggested",date:new Date().toLocaleString()};
+  try{ await postApi("/api/fuel-requests",fuel); }catch(error){ console.warn("Fuel support cloud save failed; stored locally.",error); fuel.status="Saved Locally — Sync Pending"; }
   state.fuels.unshift(fuel); addActivity(`SFA/Pay4Pump suggested ${litres} litres of Diesel for Cargo #${cargo.id}.`);
 }
-function bookFuel(){
+async function bookFuel(){
   const litres=numberValue("fuelLitres"),type=value("fuelType"),station=value("fuelStation"),plate=value("vehiclePlate");
   if(litres<=0){ showMessage("fuelMessage","Please enter a valid fuel quantity.","warning"); return; }
-  state.fuels.unshift({id:Date.now(),cargoId:"Direct Booking",route:"Direct fuel booking",type,litres,station,plate:plate||"Not supplied",status:"Booked",date:new Date().toLocaleString()});
+  $("bookFuelBtn").disabled=true;
+  showMessage("fuelMessage","Submitting fuel booking to SureWay cloud...","success");
+  const fuel={id:Date.now(),cargoId:"Direct Booking",route:"Direct fuel booking",type,litres,station,plate:plate||"Not supplied",status:"Booked",date:new Date().toLocaleString()};
+  let cloudSaved=false;
+  try{ await postApi("/api/fuel-requests",fuel); cloudSaved=true; }
+  catch(error){ console.warn("Fuel booking cloud save failed; stored locally.",error); fuel.status="Saved Locally — Sync Pending"; }
+  state.fuels.unshift(fuel);
   addActivity(`${litres} litres of ${type} booked at ${station} for vehicle ${plate||"not specified"}.`);
-  saveState();render();showMessage("fuelMessage",`Booking confirmed for ${litres} litres of ${type} at ${station}.`,"success");
+  saveState();render();showMessage("fuelMessage",cloudSaved?`Booking confirmed and saved to MongoDB for ${litres} litres of ${type} at ${station}.`:`Booking saved locally. Cloud sync is pending.`,cloudSaved?"success":"warning");
+  $("bookFuelBtn").disabled=false;
 }
 
 function renderDemands(){
