@@ -215,6 +215,12 @@
       <div><label>Weight / Tonnage *</label><input id="tonnage" type="number" min="0.1" step="0.1" /></div>
       <div><label>Pickup Origin *</label><input id="origin" /></div>
       <div><label>Destination *</label><input id="destination" /></div>
+    <div class="full">
+      <label for="cargoPostcode">Destination Postcode</label>
+      <input id="cargoPostcode" placeholder="Enter destination postcode" />
+      <button type="button" id="checkCargoPostcodeBtn">Check Postcode</button>
+      <p id="cargoPostcodeMessage" class="muted" aria-live="polite"></p>
+    </div>
       <div><label>Truck Requirement</label><select id="truckRequired"><option>Trailer</option><option>Tanker</option><option>Covered Truck</option><option>Refrigerated Truck</option><option>Tipper</option><option>Flatbed</option></select></div>
       <div><label>Pickup Date</label><input id="cargoDate" type="date" /></div>
       <div><label>Contact Number</label><input id="cargoContact" type="tel" /></div>
@@ -570,6 +576,47 @@ $("savePartnerBtn").addEventListener("click",savePartner);
 $("registerTruckBtn").addEventListener("click",registerTruck);
 $("registerDriverBtn").addEventListener("click",registerDriver);
 $("submitSmeBtn").addEventListener("click",submitSMERequest);
+
+$("checkCargoPostcodeBtn").addEventListener("click", async () => {
+  const postcode = $("cargoPostcode").value.trim();
+  const message = $("cargoPostcodeMessage");
+  const button = $("checkCargoPostcodeBtn");
+
+  if (!postcode) {
+    message.textContent = "Please enter a destination postcode.";
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "Checking postcode…";
+
+  try {
+    const response = await fetch(
+      "https://sureway-market-access-api.onrender.com/api/postcodes/lookup",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postcode })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Postcode lookup failed.");
+    }
+
+    message.textContent =
+      result.verified === true
+        ? "Postcode verified."
+        : (result.message || "Received, but official NIPOST verification is pending.");
+  } catch (error) {
+    message.textContent = "Lookup failed: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
 $("postCargoBtn").addEventListener("click",()=>createCargo(false,null));
 $("bookFuelBtn").addEventListener("click",bookFuel);
 $("resetBtn").addEventListener("click",()=>{if(confirm("Remove all locally saved demo data?")){localStorage.removeItem(STORAGE_KEY);state=emptyState();render();alert("Local demo data has been reset.");}});
