@@ -317,7 +317,7 @@
 
 <script>
 "use strict";
-const API_BASE_URL = "https://sureway-market-access-api.onrender.com";
+const API_BASE_URL = "https://sureway-market-access-api-mvp.onrender.com";
 const STORAGE_KEY = "surewayMarketAccessRecoveryV2";
 const emptyState = () => ({partners:[],trucks:[],drivers:[],demands:[],cargos:[],fuels:[],activity:[]});
 let state = emptyState();
@@ -592,7 +592,7 @@ $("checkCargoPostcodeBtn").addEventListener("click", async () => {
 
   try {
     const response = await fetch(
-      "https://sureway-market-access-api.onrender.com/api/postcodes/lookup",
+      "https://sureway-market-access-api-mvp.onrender.com/api/postcodes/lookup",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
